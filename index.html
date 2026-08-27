@@ -107,7 +107,9 @@
 
   .lane{
     display:grid; position:relative; min-height:64px;
-    background-image: repeating-linear-gradient(to right, transparent, transparent calc(100%/var(--n) - 1px), var(--steel-line) calc(100%/var(--n) - 1px), var(--steel-line) calc(100%/var(--n)));
+    background-image:
+      repeating-linear-gradient(to right, transparent, transparent calc(100%/var(--nq) - 1px), rgba(13,34,51,0.08) calc(100%/var(--nq) - 1px), rgba(13,34,51,0.08) calc(100%/var(--nq))),
+      repeating-linear-gradient(to right, transparent, transparent calc(100%/var(--n) - 1px), var(--steel-line) calc(100%/var(--n) - 1px), var(--steel-line) calc(100%/var(--n)));
   }
   .lane-inner{position:relative; padding:8px 6px; display:flex; flex-direction:column; gap:6px;}
 
@@ -239,16 +241,35 @@
         <label>Comments / Notes</label>
         <textarea id="f-comment" placeholder="Internal notes, risks, customer, sourcing status..."></textarea>
       </div>
-      <div class="row2">
+      <div class="row2" style="grid-template-columns: 1.2fr 0.8fr 1.2fr 0.8fr;">
         <div class="field">
           <label>Start Year</label>
           <select id="f-start"></select>
         </div>
         <div class="field">
+          <label>Start Qtr</label>
+          <select id="f-start-q">
+            <option value="1">Q1</option>
+            <option value="2">Q2</option>
+            <option value="3">Q3</option>
+            <option value="4">Q4</option>
+          </select>
+        </div>
+        <div class="field">
           <label>End Year</label>
           <select id="f-end"></select>
         </div>
+        <div class="field">
+          <label>End Qtr</label>
+          <select id="f-end-q">
+            <option value="1">Q1</option>
+            <option value="2">Q2</option>
+            <option value="3">Q3</option>
+            <option value="4">Q4</option>
+          </select>
+        </div>
       </div>
+      <div class="field" style="font-size:0.7rem; color:var(--ink-dim); font-family:var(--mono);">Tip: set Start = End (same year &amp; quarter) for a single milestone marker instead of a bar.</div>
       <div class="field">
         <label>Status</label>
         <div class="status-toggle">
@@ -405,26 +426,33 @@
       const lane = document.createElement('div');
       lane.className = 'lane';
       lane.style.setProperty('--n', n);
+      lane.style.setProperty('--nq', n*4);
       const laneInner = document.createElement('div');
       laneInner.className = 'lane-inner';
 
       row.products.forEach(p=>{
         const bar = document.createElement('div');
-        const startIdx = data.years.indexOf(p.start);
-        const endIdx = data.years.indexOf(p.end);
-        const s = startIdx < 0 ? 0 : startIdx;
-        const e = endIdx < 0 ? s : endIdx;
-        const span = Math.max(1, e - s + 1);
-        const leftPct = (s / n) * 100;
-        const widthPct = (span / n) * 100;
-        bar.className = 'pbar' + (p.start===p.end ? ' milestone':'');
+        const startYearIdx = data.years.indexOf(Number(p.start));
+        const endYearIdx = data.years.indexOf(Number(p.end));
+        const sYearIdx = startYearIdx < 0 ? 0 : startYearIdx;
+        const eYearIdx = endYearIdx < 0 ? sYearIdx : endYearIdx;
+        const startQ = p.startQ ? Number(p.startQ) : 1;
+        const endQ = p.endQ ? Number(p.endQ) : 4;
+        const totalQ = n * 4;
+        const startUnit = sYearIdx * 4 + (startQ - 1);
+        const endUnit = eYearIdx * 4 + (endQ - 1);
+        const spanUnits = Math.max(1, endUnit - startUnit + 1);
+        const leftPct = (startUnit / totalQ) * 100;
+        const widthPct = (spanUnits / totalQ) * 100;
+        const isMilestone = (p.start===p.end) && (startQ===endQ);
+        bar.className = 'pbar' + (isMilestone ? ' milestone':'');
         bar.style.background = p.color || COLORS[0];
         bar.style.marginLeft = leftPct + '%';
         bar.style.width = `calc(${widthPct}% - 8px)`;
         const star = p.status==='concept' ? '<span class="star">★</span>' : p.status==='sop' ? '<span class="star">★</span>' : '';
         const thumb = p.image ? `<img class="pthumb" src="${p.image}">` : '';
         bar.innerHTML = `${thumb}${star}<span class="pname">${esc(p.name)}</span>`;
-        bar.title = `${p.name}\n${p.spec||''}\n${p.comment||''}`;
+        bar.title = `${p.name}\n${p.spec||''}\n${p.comment||''}\n${p.start} Q${startQ} — ${p.end} Q${endQ}`;
         bar.addEventListener('click', ()=> openProductModal(row.id, p.id));
         laneInner.appendChild(bar);
       });
@@ -517,6 +545,8 @@
     });
     fStart.value = prod ? prod.start : data.years[0];
     fEnd.value = prod ? prod.end : data.years[0];
+    document.getElementById('f-start-q').value = prod && prod.startQ ? prod.startQ : '1';
+    document.getElementById('f-end-q').value = prod && prod.endQ ? prod.endQ : '4';
 
     document.querySelectorAll('input[name=status]').forEach(r=>{
       r.checked = prod ? r.value===prod.status : r.value==='none';
@@ -554,14 +584,22 @@
     if(!name){ fName.focus(); return; }
     const row = data.rows.find(x=>x.id===currentRowId);
     const status = document.querySelector('input[name=status]:checked').value;
-    let start = fStart.value, end = fEnd.value;
-    if(data.years.indexOf(start) > data.years.indexOf(end)){ [start,end] = [end,start]; }
+    let start = Number(fStart.value), end = Number(fEnd.value);
+    let startQ = Number(document.getElementById('f-start-q').value);
+    let endQ = Number(document.getElementById('f-end-q').value);
+
+    let startUnit = data.years.indexOf(start) * 4 + (startQ - 1);
+    let endUnit = data.years.indexOf(end) * 4 + (endQ - 1);
+    if(startUnit > endUnit){
+      [start,end] = [end,start];
+      [startQ,endQ] = [endQ,startQ];
+    }
 
     if(currentProductId){
       const prod = row.products.find(p=>p.id===currentProductId);
-      Object.assign(prod, { name, spec: fSpec.value.trim(), comment: fComment.value.trim(), start, end, status, color: currentColor, image: currentImage });
+      Object.assign(prod, { name, spec: fSpec.value.trim(), comment: fComment.value.trim(), start, end, startQ, endQ, status, color: currentColor, image: currentImage });
     } else {
-      row.products.push({ id:r(), name, spec: fSpec.value.trim(), comment: fComment.value.trim(), start, end, status, color: currentColor, image: currentImage });
+      row.products.push({ id:r(), name, spec: fSpec.value.trim(), comment: fComment.value.trim(), start, end, startQ, endQ, status, color: currentColor, image: currentImage });
     }
     save(); render();
     overlay.classList.remove('open');
