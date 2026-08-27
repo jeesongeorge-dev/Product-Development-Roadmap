@@ -106,12 +106,14 @@
   .year-cell:hover .rm-year{display:block;}
 
   .lane{
-    display:grid; position:relative; min-height:64px;
-    background-image:
-      repeating-linear-gradient(to right, transparent, transparent calc(100%/var(--nq) - 1px), rgba(13,34,51,0.08) calc(100%/var(--nq) - 1px), rgba(13,34,51,0.08) calc(100%/var(--nq))),
-      repeating-linear-gradient(to right, transparent, transparent calc(100%/var(--n) - 1px), var(--steel-line) calc(100%/var(--n) - 1px), var(--steel-line) calc(100%/var(--n)));
+    position:relative; min-height:64px;
   }
-  .lane-inner{position:relative; padding:8px 6px; display:flex; flex-direction:column; gap:6px;}
+  .grid-overlay{position:absolute; inset:0; display:grid; pointer-events:none; z-index:0;}
+  .grid-overlay .year-col{display:grid; grid-template-columns:repeat(4,1fr); border-right:1px solid var(--steel-line);}
+  .grid-overlay .year-col:last-child{border-right:none;}
+  .grid-overlay .q-col{border-right:1px dashed rgba(13,34,51,0.16);}
+  .grid-overlay .q-col:last-child{border-right:none;}
+  .lane-inner{position:relative; padding:8px 6px; display:flex; flex-direction:column; gap:6px; z-index:1;}
 
   /* product bar */
   .pbar{
@@ -234,6 +236,18 @@
         <input id="f-name" type="text" placeholder="e.g. GEN5 HFO Compressor">
       </div>
       <div class="field">
+        <label>Product Image (optional)</label>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <label for="f-image" class="btn ghost small" style="cursor:pointer; white-space:nowrap;">Choose Image</label>
+          <input type="file" id="f-image" accept="image/*" style="display:none;">
+          <span id="imageFileName" style="font-size:0.78rem; color:var(--ink-dim);">No file chosen</span>
+        </div>
+        <div id="imagePreviewWrap" style="display:none; margin-top:8px;">
+          <img id="imagePreview" style="max-width:140px; max-height:90px; border:1px solid var(--steel-line); border-radius:4px; display:block; object-fit:cover;">
+          <button class="btn ghost small" id="removeImageBtn" type="button" style="margin-top:6px;">Remove image</button>
+        </div>
+      </div>
+      <div class="field">
         <label>Specification</label>
         <textarea id="f-spec" placeholder="e.g. 34cc, 500V/800V, R1234yf compatible"></textarea>
       </div>
@@ -281,14 +295,6 @@
       <div class="field">
         <label>Bar Color</label>
         <div class="swatches" id="colorSwatches"></div>
-      </div>
-      <div class="field">
-        <label>Product Image (optional)</label>
-        <input type="file" id="f-image" accept="image/*">
-        <div id="imagePreviewWrap" style="display:none; margin-top:6px;">
-          <img id="imagePreview" style="max-width:120px; max-height:80px; border:1px solid var(--steel-line); border-radius:4px; display:block;">
-          <button class="btn ghost small" id="removeImageBtn" type="button" style="margin-top:6px;">Remove image</button>
-        </div>
       </div>
     </div>
     <div class="modal-foot">
@@ -425,8 +431,22 @@
 
       const lane = document.createElement('div');
       lane.className = 'lane';
-      lane.style.setProperty('--n', n);
-      lane.style.setProperty('--nq', n*4);
+
+      const overlay = document.createElement('div');
+      overlay.className = 'grid-overlay';
+      overlay.style.gridTemplateColumns = `repeat(${n}, 1fr)`;
+      for(let i=0;i<n;i++){
+        const yearCol = document.createElement('div');
+        yearCol.className = 'year-col';
+        for(let q=0;q<4;q++){
+          const qCol = document.createElement('div');
+          qCol.className = 'q-col';
+          yearCol.appendChild(qCol);
+        }
+        overlay.appendChild(yearCol);
+      }
+      lane.appendChild(overlay);
+
       const laneInner = document.createElement('div');
       laneInner.className = 'lane-inner';
 
@@ -509,22 +529,26 @@
   const imagePreviewWrap = document.getElementById('imagePreviewWrap');
   const imagePreview = document.getElementById('imagePreview');
   const removeImageBtn = document.getElementById('removeImageBtn');
+  const imageFileName = document.getElementById('imageFileName');
   let currentRowId = null, currentProductId = null, currentColor = COLORS[0], currentImage = null;
 
   fImage.addEventListener('change', ()=>{
     const file = fImage.files[0];
     if(!file) return;
+    imageFileName.textContent = file.name;
     const reader = new FileReader();
     reader.onload = ()=>{
       currentImage = reader.result;
       imagePreview.src = currentImage;
       imagePreviewWrap.style.display = 'block';
     };
+    reader.onerror = ()=>{ alert('Could not read that image file.'); };
     reader.readAsDataURL(file);
   });
   removeImageBtn.addEventListener('click', ()=>{
     currentImage = null;
     fImage.value = '';
+    imageFileName.textContent = 'No file chosen';
     imagePreviewWrap.style.display = 'none';
   });
 
@@ -570,6 +594,7 @@
 
     fImage.value = '';
     currentImage = prod && prod.image ? prod.image : null;
+    imageFileName.textContent = currentImage ? 'Existing image' : 'No file chosen';
     if(currentImage){ imagePreview.src = currentImage; imagePreviewWrap.style.display = 'block'; }
     else{ imagePreviewWrap.style.display = 'none'; }
 
