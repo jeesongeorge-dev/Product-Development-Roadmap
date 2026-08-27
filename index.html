@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product Development Roadmap</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-deep:#0d2a3f;
+    --navy:#134a63;
+    --navy-2:#1c6a86;
+    --steel:#e7edf1;
+    --steel-line:#c7d3da;
+    --paper:#f7f9fa;
+    --ink:#0d2233;
+    --ink-dim:#5c7385;
+    --gold:#f2b705;
+    --accent:#2ea3c9;
+    --danger:#c0392b;
+    --radius:3px;
+    --font: 'Inter', sans-serif;
+    --mono: 'IBM Plex Mono', monospace;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; font-family:var(--font); background:var(--paper); color:var(--ink);}
+  a{color:inherit;}
+
+  /* ---------- TOP BAR ---------- */
+  header{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:16px 28px; background:#fff; border-bottom:1px solid var(--steel-line);
+    position:sticky; top:0; z-index:100;
+  }
+  header h1{font-size:1.15rem; font-weight:800; margin:0;}
+  header .sub{font-size:0.78rem; color:var(--ink-dim); margin-top:2px;}
+  .header-actions{display:flex; gap:10px; align-items:center; flex-wrap:wrap;}
+  .btn{
+    font-family:var(--font); font-size:0.8rem; font-weight:600; cursor:pointer;
+    border:1px solid var(--navy); background:var(--navy); color:#fff;
+    padding:9px 16px; border-radius:var(--radius); transition:all .15s;
+  }
+  .btn:hover{background:var(--navy-2); border-color:var(--navy-2);}
+  .btn.ghost{background:#fff; color:var(--navy); border:1px solid var(--steel-line);}
+  .btn.ghost:hover{border-color:var(--navy); background:var(--steel);}
+  .btn.danger{background:#fff; color:var(--danger); border:1px solid var(--danger);}
+  .btn.danger:hover{background:var(--danger); color:#fff;}
+  .btn.small{padding:5px 10px; font-size:0.72rem;}
+  input[type=file]{display:none;}
+
+  /* ---------- STRATEGY STRIP ---------- */
+  .strategy{
+    background:var(--navy-deep); color:#fff; padding:14px 28px;
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;
+  }
+  .strategy .label{font-size:0.72rem; letter-spacing:0.08em; text-transform:uppercase; color:#9fc4d4;}
+  .strategy input{
+    background:transparent; border:none; color:#fff; font-size:1rem; font-weight:600;
+    font-family:var(--font); outline:none; border-bottom:1px dashed transparent; padding:2px 0;
+  }
+  .strategy input:hover, .strategy input:focus{border-bottom-color:var(--accent);}
+  .legend{display:flex; gap:16px; font-size:0.75rem; align-items:center;}
+  .legend .item{display:flex; align-items:center; gap:6px;}
+  .legend .swatch{width:10px; height:10px; border-radius:2px;}
+
+  /* ---------- BOARD WRAP ---------- */
+  .board-wrap{overflow-x:auto; padding:24px 28px 60px;}
+  .board{
+    display:grid;
+    border:1px solid var(--steel-line);
+    background:#fff;
+    min-width:1100px;
+  }
+  .board-row{display:grid; grid-template-columns: 190px 1fr; border-top:1px solid var(--steel-line);}
+  .board-row:first-child{border-top:none;}
+
+  .row-label{
+    background:var(--navy-deep); color:#fff; padding:14px 14px;
+    display:flex; flex-direction:column; justify-content:center; gap:2px;
+    position:sticky; left:0; z-index:5;
+    border-right:2px solid var(--gold);
+  }
+  .row-label .name{font-size:0.82rem; font-weight:700; letter-spacing:0.01em;}
+  .row-label .desc{font-size:0.66rem; color:#a9c2cf; line-height:1.3;}
+  .row-label .row-add{
+    margin-top:6px; font-size:0.66rem; color:var(--gold); cursor:pointer; text-align:left;
+    background:none; border:none; font-family:var(--font); font-weight:600; padding:0;
+  }
+  .row-label .row-add:hover{text-decoration:underline;}
+
+  .timeline-head{display:grid; grid-template-columns: 190px 1fr; border-bottom:2px solid var(--navy);}
+  .timeline-head .corner{background:var(--paper); border-right:2px solid var(--gold);
+    display:flex; align-items:center; justify-content:center; font-size:0.68rem; color:var(--ink-dim); font-family:var(--mono);
+    position:sticky; left:0; z-index:6;}
+  .years-row{display:grid;}
+  .year-cell{
+    padding:10px 6px; text-align:center; font-family:var(--mono); font-weight:600; color:var(--navy);
+    font-size:0.85rem; border-right:1px solid var(--steel-line); background:var(--steel);
+    position:relative;
+  }
+  .year-cell:last-child{border-right:none;}
+  .year-cell .rm-year{
+    position:absolute; top:2px; right:3px; font-size:0.6rem; color:var(--ink-dim); cursor:pointer; display:none;
+  }
+  .year-cell:hover .rm-year{display:block;}
+
+  .lane{
+    display:grid; position:relative; min-height:64px;
+    background-image: repeating-linear-gradient(to right, transparent, transparent calc(100%/var(--n) - 1px), var(--steel-line) calc(100%/var(--n) - 1px), var(--steel-line) calc(100%/var(--n)));
+  }
+  .lane-inner{position:relative; padding:8px 6px; display:flex; flex-direction:column; gap:6px;}
+
+  /* product bar */
+  .pbar{
+    position:relative;
+    height:34px;
+    border-radius:0 14px 14px 0;
+    display:flex; align-items:center; gap:6px;
+    padding:0 10px 0 12px;
+    color:#fff; font-size:0.72rem; font-weight:600;
+    cursor:pointer; white-space:nowrap; overflow:hidden;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+    border-left:3px solid rgba(255,255,255,0.5);
+  }
+  .pbar:hover{filter:brightness(1.08); box-shadow:0 2px 6px rgba(0,0,0,0.25);}
+  .pbar .pname{overflow:hidden; text-overflow:ellipsis;}
+  .pbar .star{font-size:0.7rem;}
+  .pbar .pthumb{width:22px; height:22px; border-radius:50%; object-fit:cover; flex:none; border:1px solid rgba(255,255,255,0.6);}
+  .pbar.milestone{
+    border-radius:14px; width:auto; max-width:200px; height:28px;
+  }
+
+  .add-row-cell{
+    display:flex; align-items:center; padding:8px 6px;
+  }
+  .add-product-btn{
+    font-family:var(--mono); font-size:0.68rem; color:var(--ink-dim); background:none; border:1px dashed var(--steel-line);
+    padding:6px 10px; cursor:pointer; border-radius:var(--radius); width:100%; text-align:left;
+  }
+  .add-product-btn:hover{border-color:var(--navy); color:var(--navy);}
+
+  .add-year-cell{display:flex; align-items:center; justify-content:center;}
+
+  /* ---------- MODAL ---------- */
+  .overlay{
+    position:fixed; inset:0; background:rgba(13,34,51,0.55); z-index:200;
+    display:none; align-items:center; justify-content:center; padding:20px;
+  }
+  .overlay.open{display:flex;}
+  .modal{
+    background:#fff; width:100%; max-width:480px; border-radius:6px; overflow:hidden;
+    max-height:90vh; overflow-y:auto;
+    box-shadow:0 20px 60px rgba(0,0,0,0.3);
+  }
+  .modal-head{padding:18px 22px; border-bottom:1px solid var(--steel-line); display:flex; justify-content:space-between; align-items:center;}
+  .modal-head h2{font-size:1rem; margin:0;}
+  .modal-close{cursor:pointer; font-size:1.2rem; color:var(--ink-dim); background:none; border:none;}
+  .modal-body{padding:20px 22px; display:flex; flex-direction:column; gap:14px;}
+  .field{display:flex; flex-direction:column; gap:5px;}
+  .field label{font-size:0.72rem; font-weight:600; color:var(--ink-dim); text-transform:uppercase; letter-spacing:0.04em;}
+  .field input, .field select, .field textarea{
+    font-family:var(--font); font-size:0.88rem; padding:8px 10px; border:1px solid var(--steel-line);
+    border-radius:var(--radius); outline:none; background:var(--paper); color:var(--ink);
+  }
+  .field input:focus, .field select:focus, .field textarea:focus{border-color:var(--navy);}
+  .field textarea{resize:vertical; min-height:60px;}
+  .row2{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+  .swatches{display:flex; gap:8px; flex-wrap:wrap;}
+  .swatch-opt{width:26px; height:26px; border-radius:50%; cursor:pointer; border:2px solid transparent;}
+  .swatch-opt.selected{border-color:var(--ink);}
+  .modal-foot{padding:16px 22px; border-top:1px solid var(--steel-line); display:flex; justify-content:space-between; gap:10px;}
+  .status-toggle{display:flex; gap:14px; font-size:0.82rem;}
+  .status-toggle label{display:flex; align-items:center; gap:5px; cursor:pointer; font-weight:500;}
+
+  footer.pagefoot{padding:20px 28px; font-size:0.72rem; color:var(--ink-dim); font-family:var(--mono); border-top:1px solid var(--steel-line);}
+
+  @media(max-width:700px){
+    header{flex-direction:column; align-items:flex-start; gap:10px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1 id="pageTitle" contenteditable="true">Product Development Roadmap</h1>
+    <div class="sub" id="pageSub" contenteditable="true">Product Management &mdash; internal planning view</div>
+  </div>
+  <div class="header-actions">
+    <button class="btn ghost small" id="addRowBtn">+ Category Row</button>
+    <button class="btn ghost small" id="addYearBtn">+ Year Column</button>
+    <button class="btn ghost" id="exportBtn">Export JSON</button>
+    <label class="btn ghost" for="importFile">Import JSON</label>
+    <input type="file" id="importFile" accept="application/json">
+    <button class="btn ghost" id="exportPdfBtn">Download PDF</button>
+    <button class="btn ghost" id="exportPptBtn">Download PPT</button>
+    <button class="btn danger" id="resetBtn">Reset</button>
+  </div>
+</header>
+
+<div id="captureArea">
+<div class="strategy">
+  <div>
+    <div class="label">Strategy</div>
+    <input id="strategyText" value="To be a full-solution / system supplier">
+  </div>
+  <div class="legend">
+    <div class="item"><span class="swatch" style="background:#f2b705;"></span> Concept readiness</div>
+    <div class="item"><span class="swatch" style="background:#2ea3c9;"></span> SOP</div>
+  </div>
+</div>
+
+<div class="board-wrap" id="boardWrap">
+  <div id="board" class="board"></div>
+</div>
+</div>
+<div id="exportSpinner" style="display:none; position:fixed; inset:0; background:rgba(13,34,51,0.6); z-index:500; align-items:center; justify-content:center; color:#fff; font-family:var(--mono); font-size:0.9rem;">Generating file…</div>
+
+<footer class="pagefoot">Data is saved locally in this browser. Use Export JSON to back up or share the roadmap.</footer>
+
+<!-- ---------- PRODUCT MODAL ---------- -->
+<div class="overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <h2 id="modalTitle">Add Product</h2>
+      <button class="modal-close" id="modalCloseBtn">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>Product / Item Name</label>
+        <input id="f-name" type="text" placeholder="e.g. GEN5 HFO Compressor">
+      </div>
+      <div class="field">
+        <label>Specification</label>
+        <textarea id="f-spec" placeholder="e.g. 34cc, 500V/800V, R1234yf compatible"></textarea>
+      </div>
+      <div class="field">
+        <label>Comments / Notes</label>
+        <textarea id="f-comment" placeholder="Internal notes, risks, customer, sourcing status..."></textarea>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>Start Year</label>
+          <select id="f-start"></select>
+        </div>
+        <div class="field">
+          <label>End Year</label>
+          <select id="f-end"></select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Status</label>
+        <div class="status-toggle">
+          <label><input type="radio" name="status" value="concept"> ★ Concept readiness</label>
+          <label><input type="radio" name="status" value="sop"> ★ SOP</label>
+          <label><input type="radio" name="status" value="none" checked> No marker</label>
+        </div>
+      </div>
+      <div class="field">
+        <label>Bar Color</label>
+        <div class="swatches" id="colorSwatches"></div>
+      </div>
+      <div class="field">
+        <label>Product Image (optional)</label>
+        <input type="file" id="f-image" accept="image/*">
+        <div id="imagePreviewWrap" style="display:none; margin-top:6px;">
+          <img id="imagePreview" style="max-width:120px; max-height:80px; border:1px solid var(--steel-line); border-radius:4px; display:block;">
+          <button class="btn ghost small" id="removeImageBtn" type="button" style="margin-top:6px;">Remove image</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn danger small" id="deleteBtn" style="display:none;">Delete</button>
+      <div style="flex:1;"></div>
+      <button class="btn ghost small" id="cancelBtn">Cancel</button>
+      <button class="btn small" id="saveBtn">Save Product</button>
+    </div>
+  </div>
+</div>
+
+<!-- ---------- ROW NAME PROMPT (lightweight) ---------- -->
+<div class="overlay" id="rowModalOverlay">
+  <div class="modal" style="max-width:380px;">
+    <div class="modal-head"><h2>New Category Row</h2><button class="modal-close" id="rowModalClose">&times;</button></div>
+    <div class="modal-body">
+      <div class="field"><label>Category Name</label><input id="rowNameInput" placeholder="e.g. Software / Controls"></div>
+      <div class="field"><label>Short Description</label><input id="rowDescInput" placeholder="Optional subtitle"></div>
+    </div>
+    <div class="modal-foot">
+      <div></div>
+      <button class="btn ghost small" id="rowCancelBtn">Cancel</button>
+      <button class="btn small" id="rowSaveBtn">Add Row</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.12.0/pptxgen.bundle.js"></script>
+<script>
+(function(){
+  const STORAGE_KEY = 'roadmap_data_v1';
+  const COLORS = ['#134a63','#1c6a86','#2ea3c9','#3d8f5b','#8a6d3b','#7a4a8f','#c0392b','#455a64'];
+
+  const defaultData = {
+    title: 'Product Development Roadmap',
+    subtitle: 'Product Management — internal planning view',
+    strategy: 'To be a full-solution / system supplier',
+    years: [2025,2026,2027,2028,2029,2030,2031],
+    rows: [
+      { id: r(), name: 'ITMS', desc:'Integrated Thermal Management System', products: [] },
+      { id: r(), name: 'System / Module', desc:'', products: [] },
+      { id: r(), name: 'Key Components', desc:'', products: [] },
+      { id: r(), name: 'WCC / Chiller', desc:'', products: [] },
+      { id: r(), name: 'HVAC', desc:'', products: [] },
+      { id: r(), name: 'Fan & HEX', desc:'', products: [] },
+      { id: r(), name: 'EC', desc:'Electric Compressor', products: [] },
+      { id: r(), name: 'ECH', desc:'Electric Compressor Heater', products: [] },
+      { id: r(), name: 'MC', desc:'Mechanical Compressor', products: [] }
+    ]
+  };
+
+  function r(){ return 'id' + Math.random().toString(36).slice(2,10); }
+
+  let data = load();
+
+  function load(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(raw) return JSON.parse(raw);
+    }catch(e){}
+    return JSON.parse(JSON.stringify(defaultData));
+  }
+  function save(){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }
+
+  // ---------- header bindings ----------
+  const pageTitle = document.getElementById('pageTitle');
+  const pageSub = document.getElementById('pageSub');
+  const strategyText = document.getElementById('strategyText');
+  pageTitle.textContent = data.title; pageSub.textContent = data.subtitle; strategyText.value = data.strategy;
+  pageTitle.addEventListener('blur', ()=>{ data.title = pageTitle.textContent; save(); });
+  pageSub.addEventListener('blur', ()=>{ data.subtitle = pageSub.textContent; save(); });
+  strategyText.addEventListener('input', ()=>{ data.strategy = strategyText.value; save(); });
+
+  // ---------- render board ----------
+  const board = document.getElementById('board');
+
+  function render(){
+    board.innerHTML = '';
+    const n = data.years.length;
+
+    // header row
+    const head = document.createElement('div');
+    head.className = 'timeline-head';
+    const corner = document.createElement('div');
+    corner.className = 'corner';
+    corner.textContent = 'CATEGORY';
+    head.appendChild(corner);
+
+    const yearsRow = document.createElement('div');
+    yearsRow.className = 'years-row';
+    yearsRow.style.gridTemplateColumns = `repeat(${n}, 1fr) auto`;
+    data.years.forEach((y, idx)=>{
+      const yc = document.createElement('div');
+      yc.className = 'year-cell';
+      yc.innerHTML = `${y}<span class="rm-year" title="Remove year">✕</span>`;
+      yc.querySelector('.rm-year').addEventListener('click', (e)=>{
+        e.stopPropagation();
+        if(confirm(`Remove year ${y}? Products referencing it will keep their range but the column disappears.`)){
+          data.years.splice(idx,1); save(); render();
+        }
+      });
+      yearsRow.appendChild(yc);
+    });
+    const addYearCell = document.createElement('div');
+    addYearCell.className = 'add-year-cell';
+    addYearCell.innerHTML = `<button class="btn ghost small" style="white-space:nowrap;">+ Year</button>`;
+    addYearCell.querySelector('button').addEventListener('click', addYear);
+    yearsRow.appendChild(addYearCell);
+    head.appendChild(yearsRow);
+    board.appendChild(head);
+
+    // rows
+    data.rows.forEach(row=>{
+      const rowEl = document.createElement('div');
+      rowEl.className = 'board-row';
+
+      const label = document.createElement('div');
+      label.className = 'row-label';
+      label.innerHTML = `<div class="name">${esc(row.name)}</div>${row.desc?`<div class="desc">${esc(row.desc)}</div>`:''}
+        <button class="row-add">+ product</button>
+        <button class="row-add" style="color:#e08a8a;">remove row</button>`;
+      const btns = label.querySelectorAll('.row-add');
+      btns[0].addEventListener('click', ()=> openProductModal(row.id, null));
+      btns[1].addEventListener('click', ()=>{
+        if(confirm(`Remove category "${row.name}" and all its products?`)){
+          data.rows = data.rows.filter(x=>x.id!==row.id); save(); render();
+        }
+      });
+      rowEl.appendChild(label);
+
+      const lane = document.createElement('div');
+      lane.className = 'lane';
+      lane.style.setProperty('--n', n);
+      const laneInner = document.createElement('div');
+      laneInner.className = 'lane-inner';
+
+      row.products.forEach(p=>{
+        const bar = document.createElement('div');
+        const startIdx = data.years.indexOf(p.start);
+        const endIdx = data.years.indexOf(p.end);
+        const s = startIdx < 0 ? 0 : startIdx;
+        const e = endIdx < 0 ? s : endIdx;
+        const span = Math.max(1, e - s + 1);
+        const leftPct = (s / n) * 100;
+        const widthPct = (span / n) * 100;
+        bar.className = 'pbar' + (p.start===p.end ? ' milestone':'');
+        bar.style.background = p.color || COLORS[0];
+        bar.style.marginLeft = leftPct + '%';
+        bar.style.width = `calc(${widthPct}% - 8px)`;
+        const star = p.status==='concept' ? '<span class="star">★</span>' : p.status==='sop' ? '<span class="star">★</span>' : '';
+        const thumb = p.image ? `<img class="pthumb" src="${p.image}">` : '';
+        bar.innerHTML = `${thumb}${star}<span class="pname">${esc(p.name)}</span>`;
+        bar.title = `${p.name}\n${p.spec||''}\n${p.comment||''}`;
+        bar.addEventListener('click', ()=> openProductModal(row.id, p.id));
+        laneInner.appendChild(bar);
+      });
+
+      const addCell = document.createElement('button');
+      addCell.className = 'add-product-btn';
+      addCell.textContent = '+ add product / milestone';
+      addCell.addEventListener('click', ()=> openProductModal(row.id, null));
+      laneInner.appendChild(addCell);
+
+      lane.appendChild(laneInner);
+      rowEl.appendChild(lane);
+      board.appendChild(rowEl);
+    });
+  }
+
+  function esc(s){ const d=document.createElement('div'); d.textContent = s||''; return d.innerHTML; }
+
+  function addYear(){
+    const last = data.years[data.years.length-1] || new Date().getFullYear();
+    data.years.push(last+1);
+    save(); render();
+  }
+  document.getElementById('addYearBtn').addEventListener('click', addYear);
+
+  // ---------- row modal ----------
+  const rowModalOverlay = document.getElementById('rowModalOverlay');
+  document.getElementById('addRowBtn').addEventListener('click', ()=>{
+    document.getElementById('rowNameInput').value='';
+    document.getElementById('rowDescInput').value='';
+    rowModalOverlay.classList.add('open');
+  });
+  document.getElementById('rowModalClose').addEventListener('click', ()=> rowModalOverlay.classList.remove('open'));
+  document.getElementById('rowCancelBtn').addEventListener('click', ()=> rowModalOverlay.classList.remove('open'));
+  document.getElementById('rowSaveBtn').addEventListener('click', ()=>{
+    const name = document.getElementById('rowNameInput').value.trim();
+    if(!name) return;
+    data.rows.push({ id:r(), name, desc: document.getElementById('rowDescInput').value.trim(), products: [] });
+    save(); render();
+    rowModalOverlay.classList.remove('open');
+  });
+
+  // ---------- product modal ----------
+  const overlay = document.getElementById('modalOverlay');
+  const modalTitle = document.getElementById('modalTitle');
+  const fName = document.getElementById('f-name');
+  const fSpec = document.getElementById('f-spec');
+  const fComment = document.getElementById('f-comment');
+  const fStart = document.getElementById('f-start');
+  const fEnd = document.getElementById('f-end');
+  const colorSwatches = document.getElementById('colorSwatches');
+  const deleteBtn = document.getElementById('deleteBtn');
+  const fImage = document.getElementById('f-image');
+  const imagePreviewWrap = document.getElementById('imagePreviewWrap');
+  const imagePreview = document.getElementById('imagePreview');
+  const removeImageBtn = document.getElementById('removeImageBtn');
+  let currentRowId = null, currentProductId = null, currentColor = COLORS[0], currentImage = null;
+
+  fImage.addEventListener('change', ()=>{
+    const file = fImage.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ()=>{
+      currentImage = reader.result;
+      imagePreview.src = currentImage;
+      imagePreviewWrap.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  });
+  removeImageBtn.addEventListener('click', ()=>{
+    currentImage = null;
+    fImage.value = '';
+    imagePreviewWrap.style.display = 'none';
+  });
+
+  function openProductModal(rowId, productId){
+    currentRowId = rowId; currentProductId = productId;
+    const row = data.rows.find(x=>x.id===rowId);
+    const prod = productId ? row.products.find(p=>p.id===productId) : null;
+
+    modalTitle.textContent = prod ? 'Edit Product' : 'Add Product';
+    fName.value = prod ? prod.name : '';
+    fSpec.value = prod ? prod.spec : '';
+    fComment.value = prod ? prod.comment : '';
+
+    fStart.innerHTML = ''; fEnd.innerHTML = '';
+    data.years.forEach(y=>{
+      fStart.innerHTML += `<option value="${y}">${y}</option>`;
+      fEnd.innerHTML += `<option value="${y}">${y}</option>`;
+    });
+    fStart.value = prod ? prod.start : data.years[0];
+    fEnd.value = prod ? prod.end : data.years[0];
+
+    document.querySelectorAll('input[name=status]').forEach(r=>{
+      r.checked = prod ? r.value===prod.status : r.value==='none';
+    });
+
+    currentColor = prod ? (prod.color || COLORS[0]) : COLORS[0];
+    colorSwatches.innerHTML = '';
+    COLORS.forEach(c=>{
+      const sw = document.createElement('div');
+      sw.className = 'swatch-opt' + (c===currentColor?' selected':'');
+      sw.style.background = c;
+      sw.addEventListener('click', ()=>{
+        currentColor = c;
+        colorSwatches.querySelectorAll('.swatch-opt').forEach(s=>s.classList.remove('selected'));
+        sw.classList.add('selected');
+      });
+      colorSwatches.appendChild(sw);
+    });
+
+    deleteBtn.style.display = prod ? 'inline-block' : 'none';
+
+    fImage.value = '';
+    currentImage = prod && prod.image ? prod.image : null;
+    if(currentImage){ imagePreview.src = currentImage; imagePreviewWrap.style.display = 'block'; }
+    else{ imagePreviewWrap.style.display = 'none'; }
+
+    overlay.classList.add('open');
+  }
+
+  document.getElementById('modalCloseBtn').addEventListener('click', ()=> overlay.classList.remove('open'));
+  document.getElementById('cancelBtn').addEventListener('click', ()=> overlay.classList.remove('open'));
+
+  document.getElementById('saveBtn').addEventListener('click', ()=>{
+    const name = fName.value.trim();
+    if(!name){ fName.focus(); return; }
+    const row = data.rows.find(x=>x.id===currentRowId);
+    const status = document.querySelector('input[name=status]:checked').value;
+    let start = fStart.value, end = fEnd.value;
+    if(data.years.indexOf(start) > data.years.indexOf(end)){ [start,end] = [end,start]; }
+
+    if(currentProductId){
+      const prod = row.products.find(p=>p.id===currentProductId);
+      Object.assign(prod, { name, spec: fSpec.value.trim(), comment: fComment.value.trim(), start, end, status, color: currentColor, image: currentImage });
+    } else {
+      row.products.push({ id:r(), name, spec: fSpec.value.trim(), comment: fComment.value.trim(), start, end, status, color: currentColor, image: currentImage });
+    }
+    save(); render();
+    overlay.classList.remove('open');
+  });
+
+  deleteBtn.addEventListener('click', ()=>{
+    const row = data.rows.find(x=>x.id===currentRowId);
+    row.products = row.products.filter(p=>p.id!==currentProductId);
+    save(); render();
+    overlay.classList.remove('open');
+  });
+
+  // ---------- export / import / reset ----------
+  document.getElementById('exportBtn').addEventListener('click', ()=>{
+    const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'product-roadmap.json'; a.click();
+    URL.revokeObjectURL(url);
+  });
+  document.getElementById('importFile').addEventListener('change', (e)=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ()=>{
+      try{
+        const parsed = JSON.parse(reader.result);
+        data = parsed; save(); 
+        pageTitle.textContent = data.title||''; pageSub.textContent = data.subtitle||''; strategyText.value = data.strategy||'';
+        render();
+      }catch(err){ alert('Invalid JSON file.'); }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  });
+  document.getElementById('resetBtn').addEventListener('click', ()=>{
+    if(confirm('Reset the roadmap to the default template? This clears all current data in this browser.')){
+      data = JSON.parse(JSON.stringify(defaultData));
+      save();
+      pageTitle.textContent = data.title; pageSub.textContent = data.subtitle; strategyText.value = data.strategy;
+      render();
+    }
+  });
+
+  // ---------- PDF / PPT export ----------
+  const spinner = document.getElementById('exportSpinner');
+  const boardWrap = document.getElementById('boardWrap');
+
+  function captureBoard(){
+    const el = document.getElementById('captureArea');
+    const fullWidth = boardWrap.scrollWidth + 20;
+    return html2canvas(el, {
+      backgroundColor: '#ffffff',
+      scale: 2,
+      width: fullWidth,
+      windowWidth: fullWidth,
+      useCORS: true
+    });
+  }
+
+  document.getElementById('exportPdfBtn').addEventListener('click', ()=>{
+    spinner.style.display = 'flex';
+    captureBoard().then(canvas=>{
+      const { jsPDF } = window.jspdf;
+      const imgData = canvas.toDataURL('image/png');
+      const wPt = canvas.width * 0.75;
+      const hPt = canvas.height * 0.75;
+      const pdf = new jsPDF({ orientation: wPt > hPt ? 'landscape':'portrait', unit:'pt', format:[wPt, hPt] });
+      pdf.addImage(imgData, 'PNG', 0, 0, wPt, hPt);
+      pdf.save((data.title||'product-roadmap').replace(/[^a-z0-9\-_ ]/gi,'').trim() + '.pdf');
+      spinner.style.display = 'none';
+    }).catch(err=>{
+      spinner.style.display = 'none';
+      alert('PDF export failed: ' + err.message);
+    });
+  });
+
+  document.getElementById('exportPptBtn').addEventListener('click', ()=>{
+    spinner.style.display = 'flex';
+    captureBoard().then(canvas=>{
+      const imgData = canvas.toDataURL('image/png');
+      const pptx = new window.PptxGenJS();
+      pptx.defineLayout({ name:'ROADMAP', width:13.33, height: 13.33 * (canvas.height/canvas.width) });
+      pptx.layout = 'ROADMAP';
+      const slide = pptx.addSlide();
+      slide.addImage({ data: imgData, x:0, y:0, w:13.33, h:13.33 * (canvas.height/canvas.width) });
+      pptx.writeFile({ fileName: (data.title||'product-roadmap').replace(/[^a-z0-9\-_ ]/gi,'').trim() + '.pptx' });
+      spinner.style.display = 'none';
+    }).catch(err=>{
+      spinner.style.display = 'none';
+      alert('PPT export failed: ' + err.message);
+    });
+  });
+
+  render();
+})();
+</script>
+
+</body>
+</html>
