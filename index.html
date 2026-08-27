@@ -72,41 +72,48 @@
     background:#fff;
     min-width:1100px;
   }
-  .board-row{display:grid; grid-template-columns: 190px 1fr; border-top:1px solid var(--steel-line);}
+  .board-row{display:grid; grid-template-columns: 190px 1fr; border-top:1px solid var(--steel-line); min-height:76px;}
   .board-row:first-child{border-top:none;}
 
   .row-label{
-    background:var(--navy-deep); color:#fff; padding:14px 14px;
+    background:var(--navy-deep); color:#fff; padding:12px 14px;
     display:flex; flex-direction:column; justify-content:center; gap:2px;
     position:sticky; left:0; z-index:5;
     border-right:2px solid var(--gold);
   }
   .row-label .name{font-size:0.82rem; font-weight:700; letter-spacing:0.01em;}
-  .row-label .desc{font-size:0.66rem; color:#a9c2cf; line-height:1.3;}
+  .row-label .desc{font-size:0.66rem; color:#a9c2cf; line-height:1.3; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
   .row-label .row-add{
     margin-top:6px; font-size:0.66rem; color:var(--gold); cursor:pointer; text-align:left;
     background:none; border:none; font-family:var(--font); font-weight:600; padding:0;
   }
   .row-label .row-add:hover{text-decoration:underline;}
 
-  .timeline-head{display:grid; grid-template-columns: 190px 1fr; border-bottom:2px solid var(--navy);}
+  .timeline-head{display:grid; grid-template-columns: 190px 1fr; border-bottom:2px solid var(--navy); position:sticky; top:var(--sticky-offset, 112px); z-index:45;}
   .timeline-head .corner{background:var(--paper); border-right:2px solid var(--gold);
     display:flex; align-items:center; justify-content:center; font-size:0.68rem; color:var(--ink-dim); font-family:var(--mono);
     position:sticky; left:0; z-index:6;}
   .years-row{display:grid;}
   .year-cell{
-    padding:10px 6px; text-align:center; font-family:var(--mono); font-weight:600; color:var(--navy);
+    padding:8px 4px 6px; text-align:center; font-family:var(--mono); font-weight:600; color:var(--navy);
     font-size:0.85rem; border-right:1px solid var(--steel-line); background:var(--steel);
     position:relative;
   }
   .year-cell:last-child{border-right:none;}
+  .year-cell .year-num{position:relative; padding-bottom:6px;}
   .year-cell .rm-year{
-    position:absolute; top:2px; right:3px; font-size:0.6rem; color:var(--ink-dim); cursor:pointer; display:none;
+    position:absolute; top:0; right:0; font-size:0.6rem; color:var(--ink-dim); cursor:pointer; display:none;
   }
   .year-cell:hover .rm-year{display:block;}
+  .year-cell .q-labels{
+    display:grid; grid-template-columns:repeat(4,1fr); border-top:1px dashed var(--steel-line); padding-top:4px;
+    font-size:0.6rem; font-weight:500; color:var(--ink-dim); letter-spacing:0.02em;
+  }
+  .year-cell .q-labels span{border-right:1px dashed var(--steel-line);}
+  .year-cell .q-labels span:last-child{border-right:none;}
 
   .lane{
-    position:relative; min-height:44px;
+    position:relative; min-height:60px;
   }
   .grid-overlay{position:absolute; inset:0; display:grid; pointer-events:none; z-index:0;}
   .grid-overlay .year-col{display:grid; grid-template-columns:repeat(4,1fr); border-right:1px solid var(--steel-line);}
@@ -159,6 +166,9 @@
   .add-year-cell{display:flex; align-items:center; justify-content:center;}
 
   /* ---------- TABS ---------- */
+  #stickyTop{position:sticky; top:0; z-index:100; background:#fff;}
+  #chartWrap:fullscreen{background:#fff; overflow:auto; padding:20px 5vw;}
+  #chartWrap:-webkit-full-screen{background:#fff; overflow:auto; padding:20px 5vw;}
   .tabs-bar{
     display:flex; gap:2px; padding:0 28px; background:#fff; border-bottom:1px solid var(--steel-line);
     overflow-x:auto;
@@ -227,6 +237,7 @@
 </head>
 <body>
 
+<div id="stickyTop">
 <header>
   <div>
     <h1 id="pageTitle" contenteditable="true">Product Development Roadmap</h1>
@@ -240,12 +251,15 @@
     <input type="file" id="importFile" accept="application/json">
     <button class="btn ghost" id="exportPdfBtn">Download PDF</button>
     <button class="btn ghost" id="exportPptBtn">Download PPT</button>
+    <button class="btn ghost" id="fullscreenBtn">⛶ Full Screen</button>
     <button class="btn danger" id="resetBtn">Reset</button>
   </div>
 </header>
 
 <div id="tabsBar" class="tabs-bar"></div>
+</div>
 
+<div id="chartWrap">
 <div id="captureArea">
 <div class="strategy">
   <div>
@@ -260,6 +274,7 @@
 
 <div class="board-wrap" id="boardWrap">
   <div id="board" class="board"></div>
+</div>
 </div>
 </div>
 
@@ -479,7 +494,7 @@
     data.years.forEach((y, idx)=>{
       const yc = document.createElement('div');
       yc.className = 'year-cell';
-      yc.innerHTML = `${y}<span class="rm-year" title="Remove year">✕</span>`;
+      yc.innerHTML = `<div class="year-num">${y}<span class="rm-year" title="Remove year">✕</span></div><div class="q-labels"><span>Q1</span><span>Q2</span><span>Q3</span><span>Q4</span></div>`;
       yc.querySelector('.rm-year').addEventListener('click', (e)=>{
         e.stopPropagation();
         if(confirm(`Remove year ${y}? Products referencing it will keep their range but the column disappears.`)){
@@ -933,6 +948,33 @@
     }
   });
 
+  // ---------- sticky offset measurement ----------
+  function updateStickyOffsets(){
+    const h = document.getElementById('stickyTop').offsetHeight;
+    document.documentElement.style.setProperty('--sticky-offset', h + 'px');
+  }
+  window.addEventListener('resize', updateStickyOffsets);
+
+  // ---------- fullscreen ----------
+  const fsBtn = document.getElementById('fullscreenBtn');
+  const fsTarget = document.getElementById('chartWrap');
+  fsBtn.addEventListener('click', ()=>{
+    const isFs = document.fullscreenElement || document.webkitFullscreenElement;
+    if(!isFs){
+      const req = fsTarget.requestFullscreen || fsTarget.webkitRequestFullscreen;
+      if(req) req.call(fsTarget);
+    } else {
+      const exit = document.exitFullscreen || document.webkitExitFullscreen;
+      if(exit) exit.call(document);
+    }
+  });
+  function updateFsBtn(){
+    const isFs = document.fullscreenElement || document.webkitFullscreenElement;
+    fsBtn.textContent = isFs ? '⤢ Exit Full Screen' : '⛶ Full Screen';
+  }
+  document.addEventListener('fullscreenchange', updateFsBtn);
+  document.addEventListener('webkitfullscreenchange', updateFsBtn);
+
   // ---------- PDF / PPT export ----------
   const spinner = document.getElementById('exportSpinner');
   const boardWrap = document.getElementById('boardWrap');
@@ -984,6 +1026,7 @@
   });
 
   render();
+  updateStickyOffsets();
 })();
 </script>
 
