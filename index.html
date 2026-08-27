@@ -106,34 +106,46 @@
   .year-cell:hover .rm-year{display:block;}
 
   .lane{
-    position:relative; min-height:64px;
+    position:relative; min-height:44px;
   }
   .grid-overlay{position:absolute; inset:0; display:grid; pointer-events:none; z-index:0;}
   .grid-overlay .year-col{display:grid; grid-template-columns:repeat(4,1fr); border-right:1px solid var(--steel-line);}
   .grid-overlay .year-col:last-child{border-right:none;}
   .grid-overlay .q-col{border-right:1px dashed rgba(13,34,51,0.16);}
   .grid-overlay .q-col:last-child{border-right:none;}
-  .lane-inner{position:relative; padding:8px 6px; display:flex; flex-direction:column; gap:6px; z-index:1;}
+  .lane-inner{position:relative; padding:6px; display:flex; flex-direction:column; gap:4px; z-index:1;}
 
   /* product bar */
   .pbar{
     position:relative;
-    height:34px;
-    border-radius:0 14px 14px 0;
+    height:26px;
+    border-radius:0 6px 6px 0;
     display:flex; align-items:center; gap:6px;
-    padding:0 10px 0 12px;
-    color:#fff; font-size:0.72rem; font-weight:600;
+    padding:0 8px 0 10px;
+    color:#fff; font-size:0.72rem;
     cursor:pointer; white-space:nowrap; overflow:hidden;
     box-shadow: 0 1px 2px rgba(0,0,0,0.15);
     border-left:3px solid rgba(255,255,255,0.5);
+    min-width:70px;
   }
-  .pbar:hover{filter:brightness(1.08); box-shadow:0 2px 6px rgba(0,0,0,0.25);}
-  .pbar .pname{overflow:hidden; text-overflow:ellipsis;}
-  .pbar .star{font-size:0.7rem;}
-  .pbar .pthumb{width:22px; height:22px; border-radius:50%; object-fit:cover; flex:none; border:1px solid rgba(255,255,255,0.6);}
+  .pbar:hover{filter:brightness(1.08); box-shadow:0 2px 6px rgba(0,0,0,0.25); z-index:2;}
+  .pbar .ptext{overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0; flex:1; display:flex; align-items:baseline; gap:5px;}
+  .pbar .pname{font-weight:700; font-size:0.74rem; flex:none;}
+  .pbar .pspec{font-weight:500; font-size:0.66rem; opacity:0.88; font-family:var(--mono); overflow:hidden; text-overflow:ellipsis;}
+  .pbar .pspec::before{content:'· '; opacity:0.6;}
+  .pbar .pcomment{font-weight:400; font-size:0.66rem; opacity:0.72; font-style:italic; overflow:hidden; text-overflow:ellipsis;}
+  .pbar .pcomment::before{content:'· '; opacity:0.6; font-style:normal;}
+  .pbar .star{font-size:0.72rem; flex:none;}
+  .pbar .star.concept{color:#f2b705;}
+  .pbar .star.sop{color:#3ecfc0;}
+  .pbar .pthumb{width:18px; height:18px; border-radius:3px; object-fit:cover; flex:none; border:1px solid rgba(255,255,255,0.6);}
   .pbar.milestone{
-    border-radius:14px; width:auto; max-width:200px; height:28px;
+    border-radius:14px; width:auto; min-width:auto; max-width:220px; height:24px;
+    padding:0 10px;
   }
+  .pbar.milestone .pthumb{width:16px; height:16px; border-radius:50%;}
+  .pbar.milestone .pspec, .pbar.milestone .pcomment{display:none;}
+
 
   .add-row-cell{
     display:flex; align-items:center; padding:8px 6px;
@@ -146,7 +158,36 @@
 
   .add-year-cell{display:flex; align-items:center; justify-content:center;}
 
-  /* ---------- MODAL ---------- */
+  /* ---------- TABS ---------- */
+  .tabs-bar{
+    display:flex; gap:2px; padding:0 28px; background:#fff; border-bottom:1px solid var(--steel-line);
+    overflow-x:auto;
+  }
+  .tab-btn{
+    font-family:var(--font); font-size:0.8rem; font-weight:600; cursor:pointer;
+    background:none; border:none; padding:12px 16px; color:var(--ink-dim);
+    border-bottom:2px solid transparent; white-space:nowrap;
+  }
+  .tab-btn:hover{color:var(--navy);}
+  .tab-btn.active{color:var(--navy); border-bottom-color:var(--navy);}
+  .tab-btn.data-tab{margin-left:auto; color:var(--navy-2);}
+
+  /* ---------- DATA TABLE ---------- */
+  #dataTable th{
+    background:var(--navy-deep); color:#fff; font-size:0.68rem; text-transform:uppercase; letter-spacing:0.04em;
+    padding:8px 8px; text-align:left; position:sticky; top:0; white-space:nowrap;
+  }
+  #dataTable td{ border-bottom:1px solid var(--steel-line); padding:4px 6px; vertical-align:middle; }
+  #dataTable input[type=text], #dataTable textarea, #dataTable select{
+    font-family:var(--font); font-size:0.78rem; padding:5px 6px; border:1px solid var(--steel-line);
+    border-radius:3px; width:100%; background:var(--paper); color:var(--ink);
+  }
+  #dataTable textarea{resize:vertical; min-height:32px;}
+  #dataTable .dt-swatch{width:16px; height:16px; border-radius:3px; cursor:pointer; display:inline-block; border:1px solid rgba(0,0,0,0.15);}
+  #dataTable .dt-swatch.selected{outline:2px solid var(--ink);}
+  #dataTable .dt-thumb{width:32px; height:32px; border-radius:4px; object-fit:cover; display:block;}
+  #dataTable .dt-del{color:var(--danger); background:none; border:none; cursor:pointer; font-size:0.9rem;}
+
   .overlay{
     position:fixed; inset:0; background:rgba(13,34,51,0.55); z-index:200;
     display:none; align-items:center; justify-content:center; padding:20px;
@@ -203,6 +244,8 @@
   </div>
 </header>
 
+<div id="tabsBar" class="tabs-bar"></div>
+
 <div id="captureArea">
 <div class="strategy">
   <div>
@@ -211,7 +254,7 @@
   </div>
   <div class="legend">
     <div class="item"><span class="swatch" style="background:#f2b705;"></span> Concept readiness</div>
-    <div class="item"><span class="swatch" style="background:#2ea3c9;"></span> SOP</div>
+    <div class="item"><span class="swatch" style="background:#3ecfc0;"></span> SOP</div>
   </div>
 </div>
 
@@ -219,6 +262,17 @@
   <div id="board" class="board"></div>
 </div>
 </div>
+
+<div id="dataTableWrap" style="display:none; padding:24px 28px 60px;">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
+    <div style="font-size:0.85rem; color:var(--ink-dim);">Edit every product across all categories in one grid. Changes save automatically and reflect on the timeline tabs.</div>
+    <button class="btn small" id="addDataRowBtn">+ Add Product Row</button>
+  </div>
+  <div style="overflow-x:auto; border:1px solid var(--steel-line); border-radius:4px; background:#fff;">
+    <table id="dataTable" style="border-collapse:collapse; width:100%; min-width:1400px; font-size:0.8rem;"></table>
+  </div>
+</div>
+
 <div id="exportSpinner" style="display:none; position:fixed; inset:0; background:rgba(13,34,51,0.6); z-index:500; align-items:center; justify-content:center; color:#fff; font-family:var(--mono); font-size:0.9rem;">Generating file…</div>
 
 <footer class="pagefoot">Data is saved locally in this browser. Use Export JSON to back up or share the roadmap.</footer>
@@ -287,8 +341,8 @@
       <div class="field">
         <label>Status</label>
         <div class="status-toggle">
-          <label><input type="radio" name="status" value="concept"> ★ Concept readiness</label>
-          <label><input type="radio" name="status" value="sop"> ★ SOP</label>
+          <label><input type="radio" name="status" value="concept"> <span style="color:#f2b705; font-size:1rem;">★</span> Concept readiness</label>
+          <label><input type="radio" name="status" value="sop"> <span style="color:#3ecfc0; font-size:1rem;">★</span> SOP</label>
           <label><input type="radio" name="status" value="none" checked> No marker</label>
         </div>
       </div>
@@ -374,8 +428,40 @@
 
   // ---------- render board ----------
   const board = document.getElementById('board');
+  const tabsBar = document.getElementById('tabsBar');
+  const captureAreaEl = document.getElementById('captureArea');
+  const dataTableWrapEl = document.getElementById('dataTableWrap');
+  let currentView = 'overview';
 
   function render(){
+    renderTabs();
+    if(currentView === 'data'){
+      captureAreaEl.style.display = 'none';
+      dataTableWrapEl.style.display = 'block';
+      renderDataTable();
+    } else {
+      captureAreaEl.style.display = '';
+      dataTableWrapEl.style.display = 'none';
+      const rowsToShow = currentView === 'overview' ? data.rows : data.rows.filter(r=>r.id===currentView);
+      renderBoard(rowsToShow);
+    }
+  }
+
+  function renderTabs(){
+    tabsBar.innerHTML = '';
+    const makeTab = (id, label, extraClass)=>{
+      const b = document.createElement('button');
+      b.className = 'tab-btn' + (currentView===id ? ' active':'') + (extraClass?(' '+extraClass):'');
+      b.textContent = label;
+      b.addEventListener('click', ()=>{ currentView = id; render(); });
+      tabsBar.appendChild(b);
+    };
+    makeTab('overview', 'Overview — All Categories');
+    data.rows.forEach(row=> makeTab(row.id, row.name));
+    makeTab('data', 'Data Entry Grid', 'data-tab');
+  }
+
+  function renderBoard(rowsToShow){
     board.innerHTML = '';
     const n = data.years.length;
 
@@ -411,7 +497,7 @@
     board.appendChild(head);
 
     // rows
-    data.rows.forEach(row=>{
+    rowsToShow.forEach(row=>{
       const rowEl = document.createElement('div');
       rowEl.className = 'board-row';
 
@@ -424,7 +510,9 @@
       btns[0].addEventListener('click', ()=> openProductModal(row.id, null));
       btns[1].addEventListener('click', ()=>{
         if(confirm(`Remove category "${row.name}" and all its products?`)){
-          data.rows = data.rows.filter(x=>x.id!==row.id); save(); render();
+          data.rows = data.rows.filter(x=>x.id!==row.id);
+          if(currentView === row.id) currentView = 'overview';
+          save(); render();
         }
       });
       rowEl.appendChild(label);
@@ -469,9 +557,11 @@
         bar.style.background = p.color || COLORS[0];
         bar.style.marginLeft = leftPct + '%';
         bar.style.width = `calc(${widthPct}% - 8px)`;
-        const star = p.status==='concept' ? '<span class="star">★</span>' : p.status==='sop' ? '<span class="star">★</span>' : '';
+        const star = p.status==='concept' ? '<span class="star concept">★</span>' : p.status==='sop' ? '<span class="star sop">★</span>' : '';
         const thumb = p.image ? `<img class="pthumb" src="${p.image}">` : '';
-        bar.innerHTML = `${thumb}${star}<span class="pname">${esc(p.name)}</span>`;
+        const specSpan = p.spec ? `<span class="pspec">${esc(p.spec)}</span>` : '';
+        const commentSpan = p.comment ? `<span class="pcomment">${esc(p.comment)}</span>` : '';
+        bar.innerHTML = `${star}${thumb}<span class="ptext"><span class="pname">${esc(p.name)}</span>${specSpan}${commentSpan}</span>`;
         bar.title = `${p.name}\n${p.spec||''}\n${p.comment||''}\n${p.start} Q${startQ} — ${p.end} Q${endQ}`;
         bar.addEventListener('click', ()=> openProductModal(row.id, p.id));
         laneInner.appendChild(bar);
@@ -490,6 +580,180 @@
   }
 
   function esc(s){ const d=document.createElement('div'); d.textContent = s||''; return d.innerHTML; }
+
+  // ---------- data entry grid ----------
+  function renderDataTable(){
+    const table = document.getElementById('dataTable');
+    table.innerHTML = '';
+    const thead = document.createElement('thead');
+    thead.innerHTML = `<tr>
+      <th style="min-width:130px;">Category</th>
+      <th style="min-width:50px;">Image</th>
+      <th style="min-width:160px;">Product Name</th>
+      <th style="min-width:160px;">Specification</th>
+      <th style="min-width:180px;">Comments</th>
+      <th style="min-width:90px;">Start Year</th>
+      <th style="min-width:70px;">Start Q</th>
+      <th style="min-width:90px;">End Year</th>
+      <th style="min-width:70px;">End Q</th>
+      <th style="min-width:130px;">Status</th>
+      <th style="min-width:150px;">Color</th>
+      <th style="min-width:40px;"></th>
+    </tr>`;
+    table.appendChild(thead);
+
+    const tbody = document.createElement('tbody');
+
+    data.rows.forEach(row=>{
+      row.products.forEach(p=>{
+        const tr = document.createElement('tr');
+
+        // category select
+        const tdCat = document.createElement('td');
+        const catSel = document.createElement('select');
+        data.rows.forEach(r2=>{
+          const opt = document.createElement('option');
+          opt.value = r2.id; opt.textContent = r2.name;
+          if(r2.id===row.id) opt.selected = true;
+          catSel.appendChild(opt);
+        });
+        catSel.addEventListener('change', ()=>{
+          const newRow = data.rows.find(r2=>r2.id===catSel.value);
+          row.products = row.products.filter(x=>x!==p);
+          newRow.products.push(p);
+          save(); renderDataTable();
+        });
+        tdCat.appendChild(catSel); tr.appendChild(tdCat);
+
+        // image
+        const tdImg = document.createElement('td');
+        const imgInput = document.createElement('input');
+        imgInput.type = 'file'; imgInput.accept = 'image/*'; imgInput.style.width = '90px'; imgInput.style.fontSize = '0.65rem';
+        imgInput.addEventListener('change', ()=>{
+          const file = imgInput.files[0]; if(!file) return;
+          const reader = new FileReader();
+          reader.onload = ()=>{ p.image = reader.result; save(); renderDataTable(); };
+          reader.readAsDataURL(file);
+        });
+        tdImg.appendChild(imgInput);
+        if(p.image){
+          const thumb = document.createElement('img');
+          thumb.className = 'dt-thumb'; thumb.src = p.image; thumb.style.marginTop='4px';
+          tdImg.appendChild(thumb);
+        }
+        tr.appendChild(tdImg);
+
+        // name
+        tr.appendChild(makeTextCell(p, 'name', 'text'));
+        // spec
+        tr.appendChild(makeTextCell(p, 'spec', 'text'));
+        // comment
+        tr.appendChild(makeTextCell(p, 'comment', 'text'));
+
+        // start year
+        tr.appendChild(makeYearSelectCell(p, 'start'));
+        // start q
+        tr.appendChild(makeQSelectCell(p, 'startQ', '1'));
+        // end year
+        tr.appendChild(makeYearSelectCell(p, 'end'));
+        // end q
+        tr.appendChild(makeQSelectCell(p, 'endQ', '4'));
+
+        // status
+        const tdStatus = document.createElement('td');
+        const statusSel = document.createElement('select');
+        [['none','No marker'],['concept','★ Concept readiness'],['sop','★ SOP']].forEach(([val,label])=>{
+          const opt = document.createElement('option'); opt.value = val; opt.textContent = label;
+          if((p.status||'none')===val) opt.selected = true;
+          statusSel.appendChild(opt);
+        });
+        statusSel.addEventListener('change', ()=>{ p.status = statusSel.value; save(); });
+        tdStatus.appendChild(statusSel); tr.appendChild(tdStatus);
+
+        // color
+        const tdColor = document.createElement('td');
+        const swWrap = document.createElement('div');
+        swWrap.style.cssText = 'display:flex; gap:4px; flex-wrap:wrap;';
+        COLORS.forEach(c=>{
+          const sw = document.createElement('span');
+          sw.className = 'dt-swatch' + ((p.color||COLORS[0])===c ? ' selected':'');
+          sw.style.background = c;
+          sw.addEventListener('click', ()=>{
+            p.color = c; save();
+            swWrap.querySelectorAll('.dt-swatch').forEach(s=>s.classList.remove('selected'));
+            sw.classList.add('selected');
+          });
+          swWrap.appendChild(sw);
+        });
+        tdColor.appendChild(swWrap); tr.appendChild(tdColor);
+
+        // delete
+        const tdDel = document.createElement('td');
+        const delBtn = document.createElement('button');
+        delBtn.className = 'dt-del'; delBtn.textContent = '✕'; delBtn.title = 'Delete product';
+        delBtn.addEventListener('click', ()=>{
+          row.products = row.products.filter(x=>x!==p);
+          save(); renderDataTable();
+        });
+        tdDel.appendChild(delBtn); tr.appendChild(tdDel);
+
+        tbody.appendChild(tr);
+      });
+    });
+
+    table.appendChild(tbody);
+
+    if(tbody.children.length === 0){
+      const tr = document.createElement('tr');
+      const td = document.createElement('td');
+      td.colSpan = 12;
+      td.style.cssText = 'padding:20px; text-align:center; color:var(--ink-dim);';
+      td.textContent = 'No products yet. Click "+ Add Product Row" to start.';
+      tr.appendChild(td); tbody.appendChild(tr);
+    }
+  }
+
+  function makeTextCell(p, field, type){
+    const td = document.createElement('td');
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = p[field] || '';
+    input.addEventListener('input', ()=>{ p[field] = input.value; save(); });
+    td.appendChild(input);
+    return td;
+  }
+
+  function makeYearSelectCell(p, field){
+    const td = document.createElement('td');
+    const sel = document.createElement('select');
+    data.years.forEach(y=>{
+      const opt = document.createElement('option'); opt.value = y; opt.textContent = y;
+      if(Number(p[field])===y) opt.selected = true;
+      sel.appendChild(opt);
+    });
+    sel.addEventListener('change', ()=>{ p[field] = Number(sel.value); save(); });
+    td.appendChild(sel);
+    return td;
+  }
+
+  function makeQSelectCell(p, field, fallback){
+    const td = document.createElement('td');
+    const sel = document.createElement('select');
+    ['1','2','3','4'].forEach(q=>{
+      const opt = document.createElement('option'); opt.value = q; opt.textContent = 'Q'+q;
+      if(String(p[field]||fallback)===q) opt.selected = true;
+      sel.appendChild(opt);
+    });
+    sel.addEventListener('change', ()=>{ p[field] = Number(sel.value); save(); });
+    td.appendChild(sel);
+    return td;
+  }
+
+  document.getElementById('addDataRowBtn').addEventListener('click', ()=>{
+    if(data.rows.length === 0){ alert('Add a category row first.'); return; }
+    data.rows[0].products.push({ id:r(), name:'New product', spec:'', comment:'', start:data.years[0], end:data.years[0], startQ:1, endQ:4, status:'none', color:COLORS[0], image:null });
+    save(); renderDataTable();
+  });
 
   function addYear(){
     const last = data.years[data.years.length-1] || new Date().getFullYear();
