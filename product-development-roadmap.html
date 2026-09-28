@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product Development Roadmap</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-deep:#0d2a3f;
+    --navy:#134a63;
+    --navy-2:#1c6a86;
+    --steel:#e7edf1;
+    --steel-line:#c7d3da;
+    --paper:#f7f9fa;
+    --ink:#0d2233;
+    --ink-dim:#5c7385;
+    --gold:#f2b705;
+    --accent:#2ea3c9;
+    --danger:#c0392b;
+    --radius:3px;
+    --font: 'Inter', sans-serif;
+    --mono: 'IBM Plex Mono', monospace;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; font-family:var(--font); background:var(--paper); color:var(--ink);}
+  a{color:inherit;}
+
+  /* ---------- TOP BAR ---------- */
+  header{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:16px 28px; background:#fff; border-bottom:1px solid var(--steel-line);
+    position:sticky; top:0; z-index:100;
+  }
+  header h1{font-size:1.15rem; font-weight:800; margin:0;}
+  header .sub{font-size:0.78rem; color:var(--ink-dim); margin-top:2px;}
+  .header-actions{display:flex; gap:10px; align-items:center; flex-wrap:wrap;}
+  .btn{
+    font-family:var(--font); font-size:0.8rem; font-weight:600; cursor:pointer;
+    border:1px solid var(--navy); background:var(--navy); color:#fff;
+    padding:9px 16px; border-radius:var(--radius); transition:all .15s;
+  }
+  .btn:hover{background:var(--navy-2); border-color:var(--navy-2);}
+  .btn.ghost{background:#fff; color:var(--navy); border:1px solid var(--steel-line);}
+  .btn.ghost:hover{border-color:var(--navy); background:var(--steel);}
+  .btn.danger{background:#fff; color:var(--danger); border:1px solid var(--danger);}
+  .btn.danger:hover{background:var(--danger); color:#fff;}
+  .btn.small{padding:5px 10px; font-size:0.72rem;}
+  input[type=file]{display:none;}
+
+  /* ---------- STRATEGY STRIP ---------- */
+  .strategy{
+    background:var(--navy-deep); color:#fff; padding:14px 28px;
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;
+  }
+  .strategy .label{font-size:0.72rem; letter-spacing:0.08em; text-transform:uppercase; color:#9fc4d4;}
+  .strategy input{
+    background:transparent; border:none; color:#fff; font-size:1rem; font-weight:600;
+    font-family:var(--font); outline:none; border-bottom:1px dashed transparent; padding:2px 0;
+  }
+  .strategy input:hover, .strategy input:focus{border-bottom-color:var(--accent);}
+  .filter-bar{
+    display:flex; align-items:center; gap:12px; padding:10px 28px; background:var(--steel);
+    border-bottom:1px solid var(--steel-line); flex-wrap:wrap;
+  }
+  .filter-label{font-size:0.75rem; font-weight:700; color:var(--navy); text-transform:uppercase; letter-spacing:0.05em;}
+  .filter-btns{display:flex; gap:6px;}
+  .filter-btn{
+    font-family:var(--font); font-size:0.78rem; font-weight:600; cursor:pointer;
+    background:#fff; border:1px solid var(--steel-line); color:var(--ink-dim);
+    padding:6px 14px; border-radius:14px;
+  }
+  .filter-btn:hover{border-color:var(--navy);}
+  .filter-btn.active{background:var(--navy); border-color:var(--navy); color:#fff;}
+
+  .legend{display:flex; gap:16px; font-size:0.75rem; align-items:center; flex-wrap:wrap;}
+  .legend .item{display:flex; align-items:center; gap:6px;}
+  .legend .swatch{width:10px; height:10px; border-radius:2px; flex:none;}
+
+
+  /* ---------- BOARD WRAP ---------- */
+  .board-wrap{overflow-x:auto; padding:24px 28px 60px;}
+  .board{
+    display:grid;
+    border:1px solid var(--steel-line);
+    background:#fff;
+    min-width:1100px;
+  }
+  .board-row{display:grid; grid-template-columns: 190px 84px 1fr; border-top:1px solid var(--steel-line); min-height:76px;}
+  .board-row:first-child{border-top:none;}
+
+  .row-label{
+    background:var(--navy-deep); color:#fff; padding:12px 14px;
+    display:flex; flex-direction:column; justify-content:center; gap:2px;
+    position:sticky; left:0; z-index:5;
+    border-right:1px solid rgba(255,255,255,0.12);
+  }
+  .row-label .name{font-size:0.82rem; font-weight:700; letter-spacing:0.01em;}
+  .row-label .desc{font-size:0.66rem; color:#a9c2cf; line-height:1.3; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
+  .row-label .row-add{
+    margin-top:6px; font-size:0.66rem; color:var(--gold); cursor:pointer; text-align:left;
+    background:none; border:none; font-family:var(--font); font-weight:600; padding:0;
+  }
+  .row-label .row-add:hover{text-decoration:underline;}
+
+  .row-image{
+    background:var(--steel); display:flex; align-items:center; justify-content:center;
+    border-right:2px solid var(--gold); position:sticky; left:190px; z-index:5;
+    cursor:pointer; overflow:hidden; padding:6px;
+  }
+  .row-image img{width:100%; height:100%; object-fit:cover; border-radius:3px;}
+  .row-image .rimg-placeholder{
+    font-family:var(--mono); font-size:0.6rem; color:var(--ink-dim); text-align:center; line-height:1.3;
+  }
+  .row-image:hover{background:#dde6ea;}
+
+  .timeline-head{display:grid; grid-template-columns: 190px 84px 1fr; border-bottom:2px solid var(--navy);}
+  .timeline-head .corner{background:var(--paper); border-right:1px solid var(--steel-line);
+    display:flex; align-items:center; justify-content:center; font-size:0.68rem; color:var(--ink-dim); font-family:var(--mono);
+    position:sticky; left:0; z-index:6;}
+  .timeline-head .corner-img{background:var(--paper); border-right:2px solid var(--gold);
+    display:flex; align-items:center; justify-content:center; font-size:0.6rem; color:var(--ink-dim); font-family:var(--mono);
+    position:sticky; left:190px; z-index:6;}
+  .years-row{display:grid; position:relative;}
+  .year-cell{
+    padding:8px 4px 6px; text-align:center; font-family:var(--mono); font-weight:600; color:var(--navy);
+    font-size:0.85rem; border-right:1px solid var(--steel-line); background:var(--steel);
+    position:relative;
+  }
+  .year-cell:last-child{border-right:none;}
+  .year-cell .year-num{position:relative; padding-bottom:6px;}
+  .year-cell .rm-year{
+    position:absolute; top:0; right:0; font-size:0.6rem; color:var(--ink-dim); cursor:pointer; display:none;
+  }
+  .year-cell:hover .rm-year{display:block;}
+  .year-cell .q-labels{
+    display:grid; grid-template-columns:repeat(4,1fr); border-top:1px dashed var(--steel-line); padding-top:4px;
+    font-size:0.6rem; font-weight:500; color:var(--ink-dim); letter-spacing:0.02em;
+  }
+  .year-cell .q-labels span{border-right:1px dashed var(--steel-line);}
+  .year-cell .q-labels span:last-child{border-right:none;}
+
+  .lane{
+    position:relative; min-height:60px;
+  }
+  .grid-overlay{position:absolute; inset:0; display:grid; pointer-events:none; z-index:0;}
+  .grid-overlay .year-col{display:grid; grid-template-columns:repeat(4,1fr); border-right:1px solid var(--steel-line);}
+  .grid-overlay .year-col:last-child{border-right:none;}
+  .grid-overlay .q-col{border-right:1px dashed rgba(13,34,51,0.16);}
+  .grid-overlay .q-col:last-child{border-right:none;}
+  .lane-inner{position:relative; padding:6px; display:flex; flex-direction:column; gap:4px; z-index:1;}
+
+  /* product bar */
+  .pbar{
+    position:relative;
+    height:26px;
+    border-radius:0 6px 6px 0;
+    display:flex; align-items:center; gap:6px;
+    padding:0 8px 0 10px;
+    color:#fff; font-size:0.72rem;
+    cursor:pointer; white-space:nowrap; overflow:hidden;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+    border-left:3px solid rgba(255,255,255,0.5);
+    min-width:70px;
+  }
+  .pbar:hover{filter:brightness(1.08); box-shadow:0 2px 6px rgba(0,0,0,0.25); z-index:2;}
+  .pbar .ptext{overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0; flex:1; display:flex; align-items:baseline; gap:5px;}
+  .pbar .pname{font-weight:700; font-size:0.74rem; flex:none;}
+  .pbar .pspec{font-weight:500; font-size:0.66rem; opacity:0.88; font-family:var(--mono); overflow:hidden; text-overflow:ellipsis;}
+  .pbar .pspec::before{content:'· '; opacity:0.6;}
+  .pbar .pcomment{font-weight:400; font-size:0.66rem; opacity:0.72; font-style:italic; overflow:hidden; text-overflow:ellipsis;}
+  .pbar .pcomment::before{content:'· '; opacity:0.6; font-style:normal;}
+  .pbar .star{font-size:0.72rem; flex:none;}
+  .pbar .star.concept{color:#f2b705;}
+  .pbar .star.sop{color:#3ecfc0;}
+  .pbar .pthumb{width:18px; height:18px; border-radius:3px; object-fit:cover; flex:none; border:1px solid rgba(255,255,255,0.6);}
+  .pbar.milestone{
+    position:relative;
+    border-radius:14px; width:auto; min-width:auto; max-width:220px; height:24px;
+    padding:0 10px 0 12px;
+    margin-top:9px;
+  }
+  .pbar.milestone::before{
+    content:''; position:absolute; left:0; top:-9px; width:2px; height:9px;
+    background:var(--mcolor, currentColor); opacity:0.9;
+  }
+  .pbar.milestone::after{
+    content:''; position:absolute; left:-2px; top:-11px; width:6px; height:6px;
+    border-radius:50%; background:var(--mcolor, currentColor);
+  }
+  .pbar.milestone .pthumb{width:16px; height:16px; border-radius:50%;}
+  .pbar.milestone .pspec, .pbar.milestone .pcomment{display:none;}
+
+  .add-row-cell{
+    display:flex; align-items:center; padding:8px 6px;
+  }
+  .add-product-btn{
+    font-family:var(--mono); font-size:0.68rem; color:var(--ink-dim); background:none; border:1px dashed var(--steel-line);
+    padding:6px 10px; cursor:pointer; border-radius:var(--radius); width:100%; text-align:left;
+  }
+  .add-product-btn:hover{border-color:var(--navy); color:var(--navy);}
+
+  .add-year-cell{
+    display:flex; align-items:center; justify-content:center;
+    position:absolute; top:0; bottom:0; left:100%; padding-left:6px;
+  }
+
+  /* ---------- TABS ---------- */
+  #stickyTop{position:sticky; top:0; z-index:100; background:#fff;}
+  #chartWrap:fullscreen{background:#fff; overflow:auto; padding:20px 5vw;}
+  #chartWrap:-webkit-full-screen{background:#fff; overflow:auto; padding:20px 5vw;}
+  .tabs-bar{
+    display:flex; gap:2px; padding:0 28px; background:#fff; border-bottom:1px solid var(--steel-line);
+    overflow-x:auto;
+  }
+  .tab-btn{
+    font-family:var(--font); font-size:0.8rem; font-weight:600; cursor:pointer;
+    background:none; border:none; padding:12px 16px; color:var(--ink-dim);
+    border-bottom:2px solid transparent; white-space:nowrap;
+  }
+  .tab-btn:hover{color:var(--navy);}
+  .tab-btn.active{color:var(--navy); border-bottom-color:var(--navy);}
+  .tab-btn.data-tab{margin-left:auto; color:var(--navy-2);}
+
+  /* ---------- DATA TABLE ---------- */
+  #dataTable th{
+    background:var(--navy-deep); color:#fff; font-size:0.68rem; text-transform:uppercase; letter-spacing:0.04em;
+    padding:8px 8px; text-align:left; position:sticky; top:0; white-space:nowrap;
+  }
+  #dataTable td{ border-bottom:1px solid var(--steel-line); padding:4px 6px; vertical-align:middle; }
+  #dataTable input[type=text], #dataTable textarea, #dataTable select{
+    font-family:var(--font); font-size:0.78rem; padding:5px 6px; border:1px solid var(--steel-line);
+    border-radius:3px; width:100%; background:var(--paper); color:var(--ink);
+  }
+  #dataTable textarea{resize:vertical; min-height:32px;}
+  #dataTable .dt-swatch{width:16px; height:16px; border-radius:3px; cursor:pointer; display:inline-block; border:1px solid rgba(0,0,0,0.15);}
+  #dataTable .dt-swatch.selected{outline:2px solid var(--ink);}
+  #dataTable .dt-thumb{width:32px; height:32px; border-radius:4px; object-fit:cover; display:block;}
+  #dataTable .dt-del{color:var(--danger); background:none; border:none; cursor:pointer; font-size:0.9rem;}
+
+  .stage-edit-row{display:flex; align-items:center; gap:10px;}
+  .stage-edit-row input[type=text]{flex:1; font-family:var(--font); font-size:0.85rem; padding:8px 10px; border:1px solid var(--steel-line); border-radius:var(--radius);}
+  .stage-edit-row input[type=color]{width:40px; height:34px; border:1px solid var(--steel-line); border-radius:var(--radius); padding:2px; cursor:pointer; flex:none;}
+
+  .pbar .stageline{position:absolute; left:0; right:0; bottom:0; height:3px; border-radius:0 0 6px 6px;}
+  .pbar.milestone .stageline{display:none;}
+  .pbar .vtag{font-family:var(--mono); font-size:0.6rem; font-weight:700; background:rgba(255,255,255,0.22); border-radius:2px; padding:1px 4px; flex:none;}
+
+  .overlay{
+    position:fixed; inset:0; background:rgba(13,34,51,0.55); z-index:200;
+    display:none; align-items:center; justify-content:center; padding:20px;
+  }
+  .overlay.open{display:flex;}
+  .modal{
+    background:#fff; width:100%; max-width:480px; border-radius:6px; overflow:hidden;
+    max-height:90vh; overflow-y:auto;
+    box-shadow:0 20px 60px rgba(0,0,0,0.3);
+  }
+  .modal-head{padding:18px 22px; border-bottom:1px solid var(--steel-line); display:flex; justify-content:space-between; align-items:center;}
+  .modal-head h2{font-size:1rem; margin:0;}
+  .modal-close{cursor:pointer; font-size:1.2rem; color:var(--ink-dim); background:none; border:none;}
+  .modal-body{padding:20px 22px; display:flex; flex-direction:column; gap:14px;}
+  .field{display:flex; flex-direction:column; gap:5px;}
+  .field label{font-size:0.72rem; font-weight:600; color:var(--ink-dim); text-transform:uppercase; letter-spacing:0.04em;}
+  .field input, .field select, .field textarea{
+    font-family:var(--font); font-size:0.88rem; padding:8px 10px; border:1px solid var(--steel-line);
+    border-radius:var(--radius); outline:none; background:var(--paper); color:var(--ink);
+  }
+  .field input:focus, .field select:focus, .field textarea:focus{border-color:var(--navy);}
+  .field textarea{resize:vertical; min-height:60px;}
+  .row2{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+  .swatches{display:flex; gap:8px; flex-wrap:wrap;}
+  .swatch-opt{width:26px; height:26px; border-radius:50%; cursor:pointer; border:2px solid transparent;}
+  .swatch-opt.selected{border-color:var(--ink);}
+  .modal-foot{padding:16px 22px; border-top:1px solid var(--steel-line); display:flex; justify-content:space-between; gap:10px;}
+  .status-toggle{display:flex; gap:14px; font-size:0.82rem;}
+  .status-toggle label{display:flex; align-items:center; gap:5px; cursor:pointer; font-weight:500;}
+
+  footer.pagefoot{padding:20px 28px; font-size:0.72rem; color:var(--ink-dim); font-family:var(--mono); border-top:1px solid var(--steel-line);}
+
+  @media(max-width:700px){
+    header{flex-direction:column; align-items:flex-start; gap:10px;}
+  }
+</style>
+</head>
+<body>
+
+<div id="stickyTop">
+<header>
+  <div>
+    <h1 id="pageTitle" contenteditable="true">Product Development Roadmap</h1>
+    <div class="sub" id="pageSub" contenteditable="true">Product Management &mdash; internal planning view</div>
+  </div>
+  <div class="header-actions">
+    <button class="btn ghost small" id="addRowBtn">+ Category Row</button>
+    <button class="btn ghost small" id="addYearBtn">+ Year Column</button>
+    <button class="btn ghost" id="exportBtn">Export JSON</button>
+    <label class="btn ghost" for="importFile">Import JSON</label>
+    <input type="file" id="importFile" accept="application/json">
+    <button class="btn ghost" id="exportPdfBtn">Download PDF</button>
+    <button class="btn ghost" id="exportPptBtn">Download PPT</button>
+    <button class="btn ghost" id="fullscreenBtn">⛶ Full Screen</button>
+    <button class="btn danger" id="resetBtn">Reset</button>
+  </div>
+</header>
+
+<div id="tabsBar" class="tabs-bar"></div>
+</div>
+
+<div id="chartWrap">
+<div id="captureArea">
+<div class="strategy">
+  <div>
+    <div class="label">Strategy</div>
+    <input id="strategyText" value="To be a full-solution / system supplier">
+  </div>
+  <div class="legend" id="stageLegend"></div>
+</div>
+
+<div id="filterBar" class="filter-bar">
+  <span class="filter-label">Vehicle Segment:</span>
+  <div class="filter-btns" id="filterBtns"></div>
+</div>
+
+<div class="board-wrap" id="boardWrap">
+  <div id="board" class="board"></div>
+</div>
+</div>
+</div>
+
+<div id="dataTableWrap" style="display:none; padding:24px 28px 60px;">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
+    <div style="font-size:0.85rem; color:var(--ink-dim);">Edit every product across all categories in one grid. Changes save automatically and reflect on the timeline tabs.</div>
+    <button class="btn small" id="addDataRowBtn">+ Add Product Row</button>
+  </div>
+  <div style="overflow-x:auto; border:1px solid var(--steel-line); border-radius:4px; background:#fff;">
+    <table id="dataTable" style="border-collapse:collapse; width:100%; min-width:1400px; font-size:0.8rem;"></table>
+  </div>
+</div>
+
+<div id="exportSpinner" style="display:none; position:fixed; inset:0; background:rgba(13,34,51,0.6); z-index:500; align-items:center; justify-content:center; color:#fff; font-family:var(--mono); font-size:0.9rem;">Generating file…</div>
+
+<footer class="pagefoot">Data is saved locally in this browser. Use Export JSON to back up or share the roadmap.</footer>
+
+<!-- ---------- PRODUCT MODAL ---------- -->
+<div class="overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <h2 id="modalTitle">Add Product</h2>
+      <button class="modal-close" id="modalCloseBtn">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>Product / Item Name</label>
+        <input id="f-name" type="text" placeholder="e.g. GEN5 HFO Compressor">
+      </div>
+      <div class="field">
+        <label>Product Image (optional)</label>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <label for="f-image" class="btn ghost small" style="cursor:pointer; white-space:nowrap;">Choose Image</label>
+          <input type="file" id="f-image" accept="image/*" style="display:none;">
+          <span id="imageFileName" style="font-size:0.78rem; color:var(--ink-dim);">No file chosen</span>
+        </div>
+        <div id="imagePreviewWrap" style="display:none; margin-top:8px;">
+          <img id="imagePreview" style="max-width:140px; max-height:90px; border:1px solid var(--steel-line); border-radius:4px; display:block; object-fit:cover;">
+          <button class="btn ghost small" id="removeImageBtn" type="button" style="margin-top:6px;">Remove image</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>Specification</label>
+        <textarea id="f-spec" placeholder="e.g. 34cc, 500V/800V, R1234yf compatible"></textarea>
+      </div>
+      <div class="field">
+        <label>Comments / Notes</label>
+        <textarea id="f-comment" placeholder="Internal notes, risks, customer, sourcing status..."></textarea>
+      </div>
+      <div class="row2" style="grid-template-columns: 1.2fr 0.8fr 1.2fr 0.8fr;">
+        <div class="field">
+          <label>Start Year</label>
+          <select id="f-start"></select>
+        </div>
+        <div class="field">
+          <label>Start Qtr</label>
+          <select id="f-start-q">
+            <option value="1">Q1</option>
+            <option value="2">Q2</option>
+            <option value="3">Q3</option>
+            <option value="4">Q4</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>End Year</label>
+          <select id="f-end"></select>
+        </div>
+        <div class="field">
+          <label>End Qtr</label>
+          <select id="f-end-q">
+            <option value="1">Q1</option>
+            <option value="2">Q2</option>
+            <option value="3">Q3</option>
+            <option value="4">Q4</option>
+          </select>
+        </div>
+      </div>
+      <div class="field" style="font-size:0.7rem; color:var(--ink-dim); font-family:var(--mono);">Tip: set Start = End (same year &amp; quarter) for a single milestone marker instead of a bar.</div>
+      <div class="row2">
+        <div class="field">
+          <label>Development Stage</label>
+          <select id="f-stage"></select>
+        </div>
+        <div class="field">
+          <label>Vehicle Segment</label>
+          <select id="f-vehicle">
+            <option value="Both">PC &amp; HDT (Both)</option>
+            <option value="PC">PC — Passenger Car</option>
+            <option value="HDT">HDT — Heavy Duty Truck</option>
+          </select>
+        </div>
+      </div>
+      <div style="text-align:right; margin-top:-8px;">
+        <button type="button" id="manageStagesLink" style="background:none; border:none; color:var(--navy-2); font-size:0.72rem; cursor:pointer; text-decoration:underline; padding:0;">Manage stage names &amp; colors</button>
+      </div>
+      <div class="field">
+        <label>Bar Color</label>
+        <div class="swatches" id="colorSwatches"></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn danger small" id="deleteBtn" style="display:none;">Delete</button>
+      <div style="flex:1;"></div>
+      <button class="btn ghost small" id="cancelBtn">Cancel</button>
+      <button class="btn small" id="saveBtn">Save Product</button>
+    </div>
+  </div>
+</div>
+
+<!-- ---------- ROW NAME PROMPT (lightweight) ---------- -->
+<div class="overlay" id="rowModalOverlay">
+  <div class="modal" style="max-width:380px;">
+    <div class="modal-head"><h2>New Category Row</h2><button class="modal-close" id="rowModalClose">&times;</button></div>
+    <div class="modal-body">
+      <div class="field"><label>Category Name</label><input id="rowNameInput" placeholder="e.g. Software / Controls"></div>
+      <div class="field"><label>Short Description</label><input id="rowDescInput" placeholder="Optional subtitle"></div>
+    </div>
+    <div class="modal-foot">
+      <div></div>
+      <button class="btn ghost small" id="rowCancelBtn">Cancel</button>
+      <button class="btn small" id="rowSaveBtn">Add Row</button>
+    </div>
+  </div>
+</div>
+
+<!-- ---------- STAGE MANAGER ---------- -->
+<div class="overlay" id="stageModalOverlay">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-head"><h2>Manage Development Stages</h2><button class="modal-close" id="stageModalClose">&times;</button></div>
+    <div class="modal-body">
+      <div style="font-size:0.78rem; color:var(--ink-dim);">Rename any stage or change its color code. These apply everywhere the stage is shown — on bars, in the legend, and in the data grid.</div>
+      <div id="stageEditRows" style="display:flex; flex-direction:column; gap:10px;"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn ghost small" id="stageResetBtn">Reset to Defaults</button>
+      <div style="flex:1;"></div>
+      <button class="btn small" id="stageDoneBtn">Done</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.12.0/pptxgen.bundle.js"></script>
+<script>
+(function(){
+  const STORAGE_KEY = 'roadmap_data_v1';
+  const COLORS = ['#134a63','#1c6a86','#2ea3c9','#3d8f5b','#8a6d3b','#7a4a8f','#c0392b','#455a64'];
+
+  const defaultData = {
+    title: 'Product Development Roadmap',
+    subtitle: 'Product Management — internal planning view',
+    strategy: 'To be a full-solution / system supplier',
+    years: [2025,2026,2027,2028,2029,2030,2031],
+    stages: [
+      { id:'under_review', name:'Under Review', color:'#8a6d3b' },
+      { id:'concept', name:'Concept', color:'#f2b705' },
+      { id:'development', name:'Development', color:'#2ea3c9' },
+      { id:'mass_production', name:'Mass Production', color:'#3ecfc0' }
+    ],
+    rows: [
+      { id: r(), name: 'ITMS', desc:'Integrated Thermal Management System', image:null, products: [] },
+      { id: r(), name: 'System / Module', desc:'', image:null, products: [] },
+      { id: r(), name: 'Key Components', desc:'', image:null, products: [] },
+      { id: r(), name: 'WCC / Chiller', desc:'', image:null, products: [] },
+      { id: r(), name: 'HVAC', desc:'', image:null, products: [] },
+      { id: r(), name: 'Fan & HEX', desc:'', image:null, products: [] },
+      { id: r(), name: 'EC', desc:'Electric Compressor', image:null, products: [] },
+      { id: r(), name: 'ECH', desc:'Electric Compressor Heater', image:null, products: [] },
+      { id: r(), name: 'MC', desc:'Mechanical Compressor', image:null, products: [] }
+    ]
+  };
+
+  function r(){ return 'id' + Math.random().toString(36).slice(2,10); }
+
+  let data = load();
+
+  function migrate(d){
+    if(!d.stages || !d.stages.length){
+      d.stages = JSON.parse(JSON.stringify(defaultData.stages));
+    }
+    (d.rows||[]).forEach(row=>{
+      if(row.image === undefined) row.image = null;
+      (row.products||[]).forEach(p=>{
+        if(p.stageId === undefined){
+          p.stageId = p.status==='sop' ? 'mass_production' : p.status==='concept' ? 'concept' : 'under_review';
+        }
+        if(p.vehicleType === undefined) p.vehicleType = 'Both';
+      });
+    });
+    return d;
+  }
+
+  function load(){
+    let d;
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      d = raw ? JSON.parse(raw) : JSON.parse(JSON.stringify(defaultData));
+    }catch(e){
+      d = JSON.parse(JSON.stringify(defaultData));
+    }
+    return migrate(d);
+  }
+  function save(){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }
+
+  // ---------- header bindings ----------
+  const pageTitle = document.getElementById('pageTitle');
+  const pageSub = document.getElementById('pageSub');
+  const strategyText = document.getElementById('strategyText');
+  pageTitle.textContent = data.title; pageSub.textContent = data.subtitle; strategyText.value = data.strategy;
+  pageTitle.addEventListener('blur', ()=>{ data.title = pageTitle.textContent; save(); });
+  pageSub.addEventListener('blur', ()=>{ data.subtitle = pageSub.textContent; save(); });
+  strategyText.addEventListener('input', ()=>{ data.strategy = strategyText.value; save(); });
+
+  // ---------- render board ----------
+  const board = document.getElementById('board');
+  const tabsBar = document.getElementById('tabsBar');
+  const captureAreaEl = document.getElementById('captureArea');
+  const dataTableWrapEl = document.getElementById('dataTableWrap');
+  const stageLegendEl = document.getElementById('stageLegend');
+  const filterBtnsEl = document.getElementById('filterBtns');
+  let currentView = 'overview';
+  let currentFilter = 'all';
+
+  function renderLegendAndFilter(){
+    stageLegendEl.innerHTML = data.stages.map(s=>
+      `<div class="item"><span class="swatch" style="background:${s.color};"></span>${esc(s.name)}</div>`
+    ).join('');
+
+    filterBtnsEl.innerHTML = '';
+    [['all','All'],['PC','PC'],['HDT','HDT']].forEach(([val,label])=>{
+      const b = document.createElement('button');
+      b.className = 'filter-btn' + (currentFilter===val ? ' active':'');
+      b.textContent = label;
+      b.addEventListener('click', ()=>{ currentFilter = val; renderCurrentBoardOnly(); });
+      filterBtnsEl.appendChild(b);
+    });
+  }
+
+  function renderCurrentBoardOnly(){
+    renderLegendAndFilter();
+    if(currentView !== 'data'){
+      const rowsToShow = currentView === 'overview' ? data.rows : data.rows.filter(r=>r.id===currentView);
+      renderBoard(rowsToShow);
+    }
+  }
+
+  function render(){
+    renderTabs();
+    renderLegendAndFilter();
+    if(currentView === 'data'){
+      captureAreaEl.style.display = 'none';
+      dataTableWrapEl.style.display = 'none';
+      document.getElementById('filterBar').style.display = 'none';
+      dataTableWrapEl.style.display = 'block';
+      renderDataTable();
+    } else {
+      captureAreaEl.style.display = '';
+      document.getElementById('filterBar').style.display = '';
+      dataTableWrapEl.style.display = 'none';
+      const rowsToShow = currentView === 'overview' ? data.rows : data.rows.filter(r=>r.id===currentView);
+      renderBoard(rowsToShow);
+    }
+  }
+
+  function renderTabs(){
+    tabsBar.innerHTML = '';
+    const makeTab = (id, label, extraClass)=>{
+      const b = document.createElement('button');
+      b.className = 'tab-btn' + (currentView===id ? ' active':'') + (extraClass?(' '+extraClass):'');
+      b.textContent = label;
+      b.addEventListener('click', ()=>{ currentView = id; render(); });
+      tabsBar.appendChild(b);
+    };
+    makeTab('overview', 'Overview — All Categories');
+    data.rows.forEach(row=> makeTab(row.id, row.name));
+    makeTab('data', 'Data Entry Grid', 'data-tab');
+  }
+
+  function renderBoard(rowsToShow){
+    board.innerHTML = '';
+    const n = data.years.length;
+
+    // header row
+    const head = document.createElement('div');
+    head.className = 'timeline-head';
+    const corner = document.createElement('div');
+    corner.className = 'corner';
+    corner.textContent = 'CATEGORY';
+    head.appendChild(corner);
+
+    const cornerImg = document.createElement('div');
+    cornerImg.className = 'corner-img';
+    cornerImg.textContent = 'IMAGE';
+    head.appendChild(cornerImg);
+
+    const yearsRow = document.createElement('div');
+    yearsRow.className = 'years-row';
+    yearsRow.style.gridTemplateColumns = `repeat(${n}, 1fr)`;
+    data.years.forEach((y, idx)=>{
+      const yc = document.createElement('div');
+      yc.className = 'year-cell';
+      yc.innerHTML = `<div class="year-num">${y}<span class="rm-year" title="Remove year">✕</span></div><div class="q-labels"><span>Q1</span><span>Q2</span><span>Q3</span><span>Q4</span></div>`;
+      yc.querySelector('.rm-year').addEventListener('click', (e)=>{
+        e.stopPropagation();
+        if(confirm(`Remove year ${y}? Products referencing it will keep their range but the column disappears.`)){
+          data.years.splice(idx,1); save(); render();
+        }
+      });
+      yearsRow.appendChild(yc);
+    });
+    const addYearCell = document.createElement('div');
+    addYearCell.className = 'add-year-cell';
+    addYearCell.innerHTML = `<button class="btn ghost small" style="white-space:nowrap;">+ Year</button>`;
+    addYearCell.querySelector('button').addEventListener('click', addYear);
+    yearsRow.appendChild(addYearCell);
+    head.appendChild(yearsRow);
+    board.appendChild(head);
+
+    // rows
+    rowsToShow.forEach(row=>{
+      const rowEl = document.createElement('div');
+      rowEl.className = 'board-row';
+
+      const label = document.createElement('div');
+      label.className = 'row-label';
+      label.innerHTML = `<div class="name">${esc(row.name)}</div>${row.desc?`<div class="desc">${esc(row.desc)}</div>`:''}
+        <button class="row-add">+ product</button>
+        <button class="row-add" style="color:#e08a8a;">remove row</button>`;
+      const btns = label.querySelectorAll('.row-add');
+      btns[0].addEventListener('click', ()=> openProductModal(row.id, null));
+      btns[1].addEventListener('click', ()=>{
+        if(confirm(`Remove category "${row.name}" and all its products?`)){
+          data.rows = data.rows.filter(x=>x.id!==row.id);
+          if(currentView === row.id) currentView = 'overview';
+          save(); render();
+        }
+      });
+      rowEl.appendChild(label);
+
+      const rowImgCell = document.createElement('div');
+      rowImgCell.className = 'row-image';
+      rowImgCell.title = 'Click to set a representative image for this category';
+      if(row.image){
+        rowImgCell.innerHTML = `<img src="${row.image}">`;
+      } else {
+        rowImgCell.innerHTML = `<span class="rimg-placeholder">+ image</span>`;
+      }
+      rowImgCell.addEventListener('click', ()=>{
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file'; fileInput.accept = 'image/*';
+        fileInput.addEventListener('change', ()=>{
+          const file = fileInput.files[0]; if(!file) return;
+          const reader = new FileReader();
+          reader.onload = ()=>{ row.image = reader.result; save(); render(); };
+          reader.readAsDataURL(file);
+        });
+        fileInput.click();
+      });
+      rowEl.appendChild(rowImgCell);
+
+      const lane = document.createElement('div');
+      lane.className = 'lane';
+
+      const overlay = document.createElement('div');
+      overlay.className = 'grid-overlay';
+      overlay.style.gridTemplateColumns = `repeat(${n}, 1fr)`;
+      for(let i=0;i<n;i++){
+        const yearCol = document.createElement('div');
+        yearCol.className = 'year-col';
+        for(let q=0;q<4;q++){
+          const qCol = document.createElement('div');
+          qCol.className = 'q-col';
+          yearCol.appendChild(qCol);
+        }
+        overlay.appendChild(yearCol);
+      }
+      lane.appendChild(overlay);
+
+      const laneInner = document.createElement('div');
+      laneInner.className = 'lane-inner';
+
+      row.products.filter(p => currentFilter==='all' || p.vehicleType==='Both' || p.vehicleType===currentFilter).forEach(p=>{
+        const bar = document.createElement('div');
+        const startYearIdx = data.years.indexOf(Number(p.start));
+        const endYearIdx = data.years.indexOf(Number(p.end));
+        const sYearIdx = startYearIdx < 0 ? 0 : startYearIdx;
+        const eYearIdx = endYearIdx < 0 ? sYearIdx : endYearIdx;
+        const startQ = p.startQ ? Number(p.startQ) : 1;
+        const endQ = p.endQ ? Number(p.endQ) : 4;
+        const totalQ = n * 4;
+        const startUnit = sYearIdx * 4 + (startQ - 1);
+        const endUnit = eYearIdx * 4 + (endQ - 1);
+        const spanUnits = Math.max(1, endUnit - startUnit + 1);
+        const leftPct = (startUnit / totalQ) * 100;
+        const widthPct = (spanUnits / totalQ) * 100;
+        const isMilestone = (p.start===p.end) && (startQ===endQ);
+        bar.className = 'pbar' + (isMilestone ? ' milestone':'');
+        bar.style.background = p.color || COLORS[0];
+        bar.style.setProperty('--mcolor', p.color || COLORS[0]);
+        bar.style.marginLeft = leftPct + '%';
+        if(!isMilestone){
+          bar.style.width = `calc(${widthPct}% - 8px)`;
+        }
+        const stage = data.stages.find(s=>s.id===p.stageId) || data.stages[0];
+        const stageLine = stage ? `<span class="stageline" style="background:${stage.color};"></span>` : '';
+        const vtag = (p.vehicleType && p.vehicleType!=='Both') ? `<span class="vtag">${p.vehicleType}</span>` : '';
+        const thumb = p.image ? `<img class="pthumb" src="${p.image}">` : '';
+        const specSpan = p.spec ? `<span class="pspec">${esc(p.spec)}</span>` : '';
+        const commentSpan = p.comment ? `<span class="pcomment">${esc(p.comment)}</span>` : '';
+        bar.innerHTML = `${vtag}${thumb}<span class="ptext"><span class="pname">${esc(p.name)}</span>${specSpan}${commentSpan}</span>${stageLine}`;
+        bar.title = `${p.name}\n${p.spec||''}\n${p.comment||''}\nStage: ${stage ? stage.name : '—'}\nVehicle: ${p.vehicleType || 'Both'}\n${p.start} Q${startQ} — ${p.end} Q${endQ}`;
+        bar.addEventListener('click', ()=> openProductModal(row.id, p.id));
+        laneInner.appendChild(bar);
+      });
+
+      const addCell = document.createElement('button');
+      addCell.className = 'add-product-btn';
+      addCell.textContent = '+ add product / milestone';
+      addCell.addEventListener('click', ()=> openProductModal(row.id, null));
+      laneInner.appendChild(addCell);
+
+      lane.appendChild(laneInner);
+      rowEl.appendChild(lane);
+      board.appendChild(rowEl);
+    });
+  }
+
+  function esc(s){ const d=document.createElement('div'); d.textContent = s||''; return d.innerHTML; }
+
+  // ---------- data entry grid ----------
+  function renderDataTable(){
+    const table = document.getElementById('dataTable');
+    table.innerHTML = '';
+    const thead = document.createElement('thead');
+    thead.innerHTML = `<tr>
+      <th style="min-width:130px;">Category</th>
+      <th style="min-width:50px;">Image</th>
+      <th style="min-width:160px;">Product Name</th>
+      <th style="min-width:160px;">Specification</th>
+      <th style="min-width:180px;">Comments</th>
+      <th style="min-width:90px;">Start Year</th>
+      <th style="min-width:70px;">Start Q</th>
+      <th style="min-width:90px;">End Year</th>
+      <th style="min-width:70px;">End Q</th>
+      <th style="min-width:150px;">Stage</th>
+      <th style="min-width:110px;">Vehicle</th>
+      <th style="min-width:150px;">Color</th>
+      <th style="min-width:40px;"></th>
+    </tr>`;
+    table.appendChild(thead);
+
+    const tbody = document.createElement('tbody');
+
+    data.rows.forEach(row=>{
+      row.products.forEach(p=>{
+        const tr = document.createElement('tr');
+
+        // category select
+        const tdCat = document.createElement('td');
+        const catSel = document.createElement('select');
+        data.rows.forEach(r2=>{
+          const opt = document.createElement('option');
+          opt.value = r2.id; opt.textContent = r2.name;
+          if(r2.id===row.id) opt.selected = true;
+          catSel.appendChild(opt);
+        });
+        catSel.addEventListener('change', ()=>{
+          const newRow = data.rows.find(r2=>r2.id===catSel.value);
+          row.products = row.products.filter(x=>x!==p);
+          newRow.products.push(p);
+          save(); renderDataTable();
+        });
+        tdCat.appendChild(catSel); tr.appendChild(tdCat);
+
+        // image
+        const tdImg = document.createElement('td');
+        const imgInput = document.createElement('input');
+        imgInput.type = 'file'; imgInput.accept = 'image/*'; imgInput.style.width = '90px'; imgInput.style.fontSize = '0.65rem';
+        imgInput.addEventListener('change', ()=>{
+          const file = imgInput.files[0]; if(!file) return;
+          const reader = new FileReader();
+          reader.onload = ()=>{ p.image = reader.result; save(); renderDataTable(); };
+          reader.readAsDataURL(file);
+        });
+        tdImg.appendChild(imgInput);
+        if(p.image){
+          const thumb = document.createElement('img');
+          thumb.className = 'dt-thumb'; thumb.src = p.image; thumb.style.marginTop='4px';
+          tdImg.appendChild(thumb);
+        }
+        tr.appendChild(tdImg);
+
+        // name
+        tr.appendChild(makeTextCell(p, 'name', 'text'));
+        // spec
+        tr.appendChild(makeTextCell(p, 'spec', 'text'));
+        // comment
+        tr.appendChild(makeTextCell(p, 'comment', 'text'));
+
+        // start year
+        tr.appendChild(makeYearSelectCell(p, 'start'));
+        // start q
+        tr.appendChild(makeQSelectCell(p, 'startQ', '1'));
+        // end year
+        tr.appendChild(makeYearSelectCell(p, 'end'));
+        // end q
+        tr.appendChild(makeQSelectCell(p, 'endQ', '4'));
+
+        // stage
+        const tdStage = document.createElement('td');
+        const stageSel = document.createElement('select');
+        data.stages.forEach(s=>{
+          const opt = document.createElement('option'); opt.value = s.id; opt.textContent = s.name;
+          if((p.stageId || data.stages[0].id) === s.id) opt.selected = true;
+          stageSel.appendChild(opt);
+        });
+        stageSel.addEventListener('change', ()=>{ p.stageId = stageSel.value; save(); });
+        tdStage.appendChild(stageSel); tr.appendChild(tdStage);
+
+        // vehicle
+        const tdVehicle = document.createElement('td');
+        const vehicleSel = document.createElement('select');
+        [['Both','PC & HDT'],['PC','PC'],['HDT','HDT']].forEach(([val,label])=>{
+          const opt = document.createElement('option'); opt.value = val; opt.textContent = label;
+          if((p.vehicleType||'Both')===val) opt.selected = true;
+          vehicleSel.appendChild(opt);
+        });
+        vehicleSel.addEventListener('change', ()=>{ p.vehicleType = vehicleSel.value; save(); });
+        tdVehicle.appendChild(vehicleSel); tr.appendChild(tdVehicle);
+
+        // color
+        const tdColor = document.createElement('td');
+        const swWrap = document.createElement('div');
+        swWrap.style.cssText = 'display:flex; gap:4px; flex-wrap:wrap;';
+        COLORS.forEach(c=>{
+          const sw = document.createElement('span');
+          sw.className = 'dt-swatch' + ((p.color||COLORS[0])===c ? ' selected':'');
+          sw.style.background = c;
+          sw.addEventListener('click', ()=>{
+            p.color = c; save();
+            swWrap.querySelectorAll('.dt-swatch').forEach(s=>s.classList.remove('selected'));
+            sw.classList.add('selected');
+          });
+          swWrap.appendChild(sw);
+        });
+        tdColor.appendChild(swWrap); tr.appendChild(tdColor);
+
+        // delete
+        const tdDel = document.createElement('td');
+        const delBtn = document.createElement('button');
+        delBtn.className = 'dt-del'; delBtn.textContent = '✕'; delBtn.title = 'Delete product';
+        delBtn.addEventListener('click', ()=>{
+          row.products = row.products.filter(x=>x!==p);
+          save(); renderDataTable();
+        });
+        tdDel.appendChild(delBtn); tr.appendChild(tdDel);
+
+        tbody.appendChild(tr);
+      });
+    });
+
+    table.appendChild(tbody);
+
+    if(tbody.children.length === 0){
+      const tr = document.createElement('tr');
+      const td = document.createElement('td');
+      td.colSpan = 12;
+      td.style.cssText = 'padding:20px; text-align:center; color:var(--ink-dim);';
+      td.textContent = 'No products yet. Click "+ Add Product Row" to start.';
+      tr.appendChild(td); tbody.appendChild(tr);
+    }
+  }
+
+  function makeTextCell(p, field, type){
+    const td = document.createElement('td');
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = p[field] || '';
+    input.addEventListener('input', ()=>{ p[field] = input.value; save(); });
+    td.appendChild(input);
+    return td;
+  }
+
+  function makeYearSelectCell(p, field){
+    const td = document.createElement('td');
+    const sel = document.createElement('select');
+    data.years.forEach(y=>{
+      const opt = document.createElement('option'); opt.value = y; opt.textContent = y;
+      if(Number(p[field])===y) opt.selected = true;
+      sel.appendChild(opt);
+    });
+    sel.addEventListener('change', ()=>{ p[field] = Number(sel.value); save(); });
+    td.appendChild(sel);
+    return td;
+  }
+
+  function makeQSelectCell(p, field, fallback){
+    const td = document.createElement('td');
+    const sel = document.createElement('select');
+    ['1','2','3','4'].forEach(q=>{
+      const opt = document.createElement('option'); opt.value = q; opt.textContent = 'Q'+q;
+      if(String(p[field]||fallback)===q) opt.selected = true;
+      sel.appendChild(opt);
+    });
+    sel.addEventListener('change', ()=>{ p[field] = Number(sel.value); save(); });
+    td.appendChild(sel);
+    return td;
+  }
+
+  document.getElementById('addDataRowBtn').addEventListener('click', ()=>{
+    if(data.rows.length === 0){ alert('Add a category row first.'); return; }
+    data.rows[0].products.push({ id:r(), name:'New product', spec:'', comment:'', start:data.years[0], end:data.years[0], startQ:1, endQ:4, stageId:data.stages[0].id, vehicleType:'Both', color:COLORS[0], image:null });
+    save(); renderDataTable();
+  });
+
+  function addYear(){
+    const last = data.years[data.years.length-1] || new Date().getFullYear();
+    data.years.push(last+1);
+    save(); render();
+  }
+  document.getElementById('addYearBtn').addEventListener('click', addYear);
+
+  // ---------- row modal ----------
+  const rowModalOverlay = document.getElementById('rowModalOverlay');
+  document.getElementById('addRowBtn').addEventListener('click', ()=>{
+    document.getElementById('rowNameInput').value='';
+    document.getElementById('rowDescInput').value='';
+    rowModalOverlay.classList.add('open');
+  });
+  document.getElementById('rowModalClose').addEventListener('click', ()=> rowModalOverlay.classList.remove('open'));
+  document.getElementById('rowCancelBtn').addEventListener('click', ()=> rowModalOverlay.classList.remove('open'));
+  document.getElementById('rowSaveBtn').addEventListener('click', ()=>{
+    const name = document.getElementById('rowNameInput').value.trim();
+    if(!name) return;
+    data.rows.push({ id:r(), name, desc: document.getElementById('rowDescInput').value.trim(), products: [] });
+    save(); render();
+    rowModalOverlay.classList.remove('open');
+  });
+
+  // ---------- product modal ----------
+  const overlay = document.getElementById('modalOverlay');
+  const modalTitle = document.getElementById('modalTitle');
+  const fName = document.getElementById('f-name');
+  const fSpec = document.getElementById('f-spec');
+  const fComment = document.getElementById('f-comment');
+  const fStart = document.getElementById('f-start');
+  const fEnd = document.getElementById('f-end');
+  const colorSwatches = document.getElementById('colorSwatches');
+  const deleteBtn = document.getElementById('deleteBtn');
+  const fImage = document.getElementById('f-image');
+  const fStage = document.getElementById('f-stage');
+  const fVehicle = document.getElementById('f-vehicle');
+  const imagePreviewWrap = document.getElementById('imagePreviewWrap');
+  const imagePreview = document.getElementById('imagePreview');
+  const removeImageBtn = document.getElementById('removeImageBtn');
+  const imageFileName = document.getElementById('imageFileName');
+  let currentRowId = null, currentProductId = null, currentColor = COLORS[0], currentImage = null;
+
+  fImage.addEventListener('change', ()=>{
+    const file = fImage.files[0];
+    if(!file) return;
+    imageFileName.textContent = file.name;
+    const reader = new FileReader();
+    reader.onload = ()=>{
+      currentImage = reader.result;
+      imagePreview.src = currentImage;
+      imagePreviewWrap.style.display = 'block';
+    };
+    reader.onerror = ()=>{ alert('Could not read that image file.'); };
+    reader.readAsDataURL(file);
+  });
+  removeImageBtn.addEventListener('click', ()=>{
+    currentImage = null;
+    fImage.value = '';
+    imageFileName.textContent = 'No file chosen';
+    imagePreviewWrap.style.display = 'none';
+  });
+
+  function openProductModal(rowId, productId){
+    currentRowId = rowId; currentProductId = productId;
+    const row = data.rows.find(x=>x.id===rowId);
+    const prod = productId ? row.products.find(p=>p.id===productId) : null;
+
+    modalTitle.textContent = prod ? 'Edit Product' : 'Add Product';
+    fName.value = prod ? prod.name : '';
+    fSpec.value = prod ? prod.spec : '';
+    fComment.value = prod ? prod.comment : '';
+
+    fStart.innerHTML = ''; fEnd.innerHTML = '';
+    data.years.forEach(y=>{
+      fStart.innerHTML += `<option value="${y}">${y}</option>`;
+      fEnd.innerHTML += `<option value="${y}">${y}</option>`;
+    });
+    fStart.value = prod ? prod.start : data.years[0];
+    fEnd.value = prod ? prod.end : data.years[0];
+    document.getElementById('f-start-q').value = prod && prod.startQ ? prod.startQ : '1';
+    document.getElementById('f-end-q').value = prod && prod.endQ ? prod.endQ : '4';
+
+    fStage.innerHTML = data.stages.map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join('');
+    fStage.value = prod && prod.stageId ? prod.stageId : data.stages[0].id;
+    fVehicle.value = prod && prod.vehicleType ? prod.vehicleType : 'Both';
+
+    currentColor = prod ? (prod.color || COLORS[0]) : COLORS[0];
+    colorSwatches.innerHTML = '';
+    COLORS.forEach(c=>{
+      const sw = document.createElement('div');
+      sw.className = 'swatch-opt' + (c===currentColor?' selected':'');
+      sw.style.background = c;
+      sw.addEventListener('click', ()=>{
+        currentColor = c;
+        colorSwatches.querySelectorAll('.swatch-opt').forEach(s=>s.classList.remove('selected'));
+        sw.classList.add('selected');
+      });
+      colorSwatches.appendChild(sw);
+    });
+
+    deleteBtn.style.display = prod ? 'inline-block' : 'none';
+
+    fImage.value = '';
+    currentImage = prod && prod.image ? prod.image : null;
+    imageFileName.textContent = currentImage ? 'Existing image' : 'No file chosen';
+    if(currentImage){ imagePreview.src = currentImage; imagePreviewWrap.style.display = 'block'; }
+    else{ imagePreviewWrap.style.display = 'none'; }
+
+    overlay.classList.add('open');
+  }
+
+  document.getElementById('modalCloseBtn').addEventListener('click', ()=> overlay.classList.remove('open'));
+  document.getElementById('cancelBtn').addEventListener('click', ()=> overlay.classList.remove('open'));
+
+  // ---------- stage manager ----------
+  const stageModalOverlay = document.getElementById('stageModalOverlay');
+  const stageEditRows = document.getElementById('stageEditRows');
+
+  function renderStageEditRows(){
+    stageEditRows.innerHTML = '';
+    data.stages.forEach(stage=>{
+      const rowDiv = document.createElement('div');
+      rowDiv.className = 'stage-edit-row';
+      const nameInput = document.createElement('input');
+      nameInput.type = 'text'; nameInput.value = stage.name;
+      nameInput.addEventListener('input', ()=>{
+        stage.name = nameInput.value;
+        save();
+        fStage.innerHTML = data.stages.map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join('');
+        fStage.value = stage.id;
+        render();
+      });
+      const colorInput = document.createElement('input');
+      colorInput.type = 'color'; colorInput.value = stage.color;
+      colorInput.addEventListener('input', ()=>{
+        stage.color = colorInput.value;
+        save(); render();
+      });
+      rowDiv.appendChild(nameInput);
+      rowDiv.appendChild(colorInput);
+      stageEditRows.appendChild(rowDiv);
+    });
+  }
+
+  document.getElementById('manageStagesLink').addEventListener('click', ()=>{
+    renderStageEditRows();
+    stageModalOverlay.classList.add('open');
+  });
+  document.getElementById('stageModalClose').addEventListener('click', ()=> stageModalOverlay.classList.remove('open'));
+  document.getElementById('stageDoneBtn').addEventListener('click', ()=> stageModalOverlay.classList.remove('open'));
+  document.getElementById('stageResetBtn').addEventListener('click', ()=>{
+    if(confirm('Reset all 4 stage names and colors to their defaults?')){
+      data.stages = JSON.parse(JSON.stringify(defaultData.stages));
+      save(); renderStageEditRows(); render();
+    }
+  });
+
+  document.getElementById('saveBtn').addEventListener('click', ()=>{
+    const name = fName.value.trim();
+    if(!name){ fName.focus(); return; }
+    const row = data.rows.find(x=>x.id===currentRowId);
+    const stageId = fStage.value;
+    const vehicleType = fVehicle.value;
+    let start = Number(fStart.value), end = Number(fEnd.value);
+    let startQ = Number(document.getElementById('f-start-q').value);
+    let endQ = Number(document.getElementById('f-end-q').value);
+
+    let startUnit = data.years.indexOf(start) * 4 + (startQ - 1);
+    let endUnit = data.years.indexOf(end) * 4 + (endQ - 1);
+    if(startUnit > endUnit){
+      [start,end] = [end,start];
+      [startQ,endQ] = [endQ,startQ];
+    }
+
+    if(currentProductId){
+      const prod = row.products.find(p=>p.id===currentProductId);
+      Object.assign(prod, { name, spec: fSpec.value.trim(), comment: fComment.value.trim(), start, end, startQ, endQ, stageId, vehicleType, color: currentColor, image: currentImage });
+    } else {
+      row.products.push({ id:r(), name, spec: fSpec.value.trim(), comment: fComment.value.trim(), start, end, startQ, endQ, stageId, vehicleType, color: currentColor, image: currentImage });
+    }
+    save(); render();
+    overlay.classList.remove('open');
+  });
+
+  deleteBtn.addEventListener('click', ()=>{
+    const row = data.rows.find(x=>x.id===currentRowId);
+    row.products = row.products.filter(p=>p.id!==currentProductId);
+    save(); render();
+    overlay.classList.remove('open');
+  });
+
+  // ---------- export / import / reset ----------
+  document.getElementById('exportBtn').addEventListener('click', ()=>{
+    const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'product-roadmap.json'; a.click();
+    URL.revokeObjectURL(url);
+  });
+  document.getElementById('importFile').addEventListener('change', (e)=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ()=>{
+      try{
+        const parsed = JSON.parse(reader.result);
+        data = migrate(parsed); save(); 
+        pageTitle.textContent = data.title||''; pageSub.textContent = data.subtitle||''; strategyText.value = data.strategy||'';
+        render();
+      }catch(err){ alert('Invalid JSON file.'); }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  });
+  document.getElementById('resetBtn').addEventListener('click', ()=>{
+    if(confirm('Reset the roadmap to the default template? This clears all current data in this browser.')){
+      data = JSON.parse(JSON.stringify(defaultData));
+      save();
+      pageTitle.textContent = data.title; pageSub.textContent = data.subtitle; strategyText.value = data.strategy;
+      render();
+    }
+  });
+
+  // ---------- sticky offset measurement ----------
+  function updateStickyOffsets(){
+    const h = document.getElementById('stickyTop').offsetHeight;
+    document.documentElement.style.setProperty('--sticky-offset', h + 'px');
+  }
+  window.addEventListener('resize', updateStickyOffsets);
+
+  // ---------- fullscreen ----------
+  const fsBtn = document.getElementById('fullscreenBtn');
+  const fsTarget = document.getElementById('chartWrap');
+  fsBtn.addEventListener('click', ()=>{
+    const isFs = document.fullscreenElement || document.webkitFullscreenElement;
+    if(!isFs){
+      const req = fsTarget.requestFullscreen || fsTarget.webkitRequestFullscreen;
+      if(req) req.call(fsTarget);
+    } else {
+      const exit = document.exitFullscreen || document.webkitExitFullscreen;
+      if(exit) exit.call(document);
+    }
+  });
+  function updateFsBtn(){
+    const isFs = document.fullscreenElement || document.webkitFullscreenElement;
+    fsBtn.textContent = isFs ? '⤢ Exit Full Screen' : '⛶ Full Screen';
+  }
+  document.addEventListener('fullscreenchange', updateFsBtn);
+  document.addEventListener('webkitfullscreenchange', updateFsBtn);
+
+  // ---------- PDF / PPT export ----------
+  const spinner = document.getElementById('exportSpinner');
+  const boardWrap = document.getElementById('boardWrap');
+
+  function captureBoard(){
+    const el = document.getElementById('captureArea');
+    const fullWidth = boardWrap.scrollWidth + 20;
+    return html2canvas(el, {
+      backgroundColor: '#ffffff',
+      scale: 2,
+      width: fullWidth,
+      windowWidth: fullWidth,
+      useCORS: true
+    });
+  }
+
+  document.getElementById('exportPdfBtn').addEventListener('click', ()=>{
+    spinner.style.display = 'flex';
+    captureBoard().then(canvas=>{
+      const { jsPDF } = window.jspdf;
+      const imgData = canvas.toDataURL('image/png');
+      const wPt = canvas.width * 0.75;
+      const hPt = canvas.height * 0.75;
+      const pdf = new jsPDF({ orientation: wPt > hPt ? 'landscape':'portrait', unit:'pt', format:[wPt, hPt] });
+      pdf.addImage(imgData, 'PNG', 0, 0, wPt, hPt);
+      pdf.save((data.title||'product-roadmap').replace(/[^a-z0-9\-_ ]/gi,'').trim() + '.pdf');
+      spinner.style.display = 'none';
+    }).catch(err=>{
+      spinner.style.display = 'none';
+      alert('PDF export failed: ' + err.message);
+    });
+  });
+
+  document.getElementById('exportPptBtn').addEventListener('click', ()=>{
+    spinner.style.display = 'flex';
+    captureBoard().then(canvas=>{
+      const imgData = canvas.toDataURL('image/png');
+      const pptx = new window.PptxGenJS();
+      pptx.defineLayout({ name:'ROADMAP', width:13.33, height: 13.33 * (canvas.height/canvas.width) });
+      pptx.layout = 'ROADMAP';
+      const slide = pptx.addSlide();
+      slide.addImage({ data: imgData, x:0, y:0, w:13.33, h:13.33 * (canvas.height/canvas.width) });
+      pptx.writeFile({ fileName: (data.title||'product-roadmap').replace(/[^a-z0-9\-_ ]/gi,'').trim() + '.pptx' });
+      spinner.style.display = 'none';
+    }).catch(err=>{
+      spinner.style.display = 'none';
+      alert('PPT export failed: ' + err.message);
+    });
+  });
+
+  render();
+  updateStickyOffsets();
+})();
+</script>
+
+</body>
+</html>
